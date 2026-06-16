@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -27,6 +27,20 @@ interface Property {
 const ITEMS_PER_PAGE = 6;
 
 export default function PropertiesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#1a2b4a] flex items-center justify-center text-white p-8">
+        <div className="text-center">
+          <p className="text-xl font-semibold">Loading properties...</p>
+        </div>
+      </div>
+    }>
+      <PropertiesContent />
+    </Suspense>
+  );
+}
+
+function PropertiesContent() {
   const searchParams = useSearchParams();
 
   const [properties, setProperties] = useState<Property[]>([]);
@@ -427,7 +441,7 @@ export default function PropertiesPage() {
                       </h3>
 
                       <p className="mt-1 text-sm text-gray-400 flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400/80 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400/80 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
@@ -435,17 +449,15 @@ export default function PropertiesPage() {
                       </p>
 
                       <div className="mt-3 pt-4 border-t border-gray-50 flex items-center justify-between">
-                      <p className="text-lg font-bold text-[#1a2b4a] tracking-tight">
-                        {property.price
-                          ? `${property.price.toLocaleString()} MAD`
-                          : "Price on request"}
-                      </p>
-                      <p className="text-sm text-gray-400 font-light tracking-wide">
-                        {property.surface ? `${property.surface} m²` : "—"}
-                      </p>
-                    </div>
-
-                      
+                        <p className="text-lg font-bold text-[#1a2b4a] tracking-tight">
+                          {property.price
+                            ? `${property.price.toLocaleString()} MAD`
+                            : "Price on request"}
+                        </p>
+                        <p className="text-sm text-gray-400 font-light tracking-wide">
+                          {property.surface ? `${property.surface} m²` : "—"}
+                        </p>
+                      </div>
 
                       <Link
                         href={`/properties/${property.id}`}
@@ -510,6 +522,3 @@ export default function PropertiesPage() {
     </div>
   );
 }
-
-
-//rooms
