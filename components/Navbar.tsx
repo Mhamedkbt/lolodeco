@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -10,6 +10,8 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const t = useTranslations("nav");
   const locale = useLocale();
+  
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { href: `/${locale}`, label: t("home") },
@@ -19,8 +21,30 @@ export default function Navbar() {
     { href: `/${locale}/contact`, label: t("contact") },
   ];
 
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const handleScroll = () => {
+      setMenuOpen(false);
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
   return (
-    <header className="sticky top-0 z-50 bg-[#1a2b4a] shadow-md">
+    <header ref={headerRef} className="sticky top-0 z-50 bg-[#1a2b4a] shadow-md">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"> 
         
         {/* Logo Link Wrapper */}
@@ -29,7 +53,6 @@ export default function Navbar() {
           className="flex items-center"
           onClick={() => setMenuOpen(false)}
         >
-          {/* Scaled naturally with consistent aspect ratio preservation */}
           <div className="relative h-16 w-36 sm:w-40 md:w-44">
             <Image
               src="/images/LaTourImmoLogoPng.png"
@@ -56,14 +79,13 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Desktop Action Box (Language Switcher and Phone Button) */}
+        {/* Desktop Action Box */}
         <div className="hidden items-center gap-3 md:flex">
           <Link 
             href={`/${locale}/admin`}
             className="text-white transition-colors hover:text-[#c9a84c]"
             aria-label="Admin Login"
           >
-            {/* Person Icon */}
             <svg 
               className="h-6 w-6" 
               fill="none" 
@@ -85,7 +107,7 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* Mobile Controls (Person Icon on the left of Menu Icon) */}
+        {/* Mobile Controls */}
         <div className="flex items-center gap-3 md:hidden">
           <Link 
             href={`/${locale}/admin`}
@@ -93,7 +115,6 @@ export default function Navbar() {
             aria-label="Admin Login"
             onClick={() => setMenuOpen(false)}
           >
-            {/* Person Icon */}
             <svg 
               className="h-6 w-6" 
               fill="none" 
@@ -113,61 +134,51 @@ export default function Navbar() {
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             onClick={() => setMenuOpen((open) => !open)}
           >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              {menuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
+            <div className="relative h-6 w-6 flex items-center justify-center">
+              {/* Hamburger Icon Lines */}
+              <span className={`absolute h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out ${menuOpen ? "rotate-45" : "-translate-y-2"}`} />
+              <span className={`absolute h-0.5 w-6 bg-current transform transition-all duration-200 ease-in-out ${menuOpen ? "opacity-0" : "opacity-100"}`} />
+              <span className={`absolute h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out ${menuOpen ? "-rotate-45" : "translate-y-2"}`} />
+            </div>
           </button>
         </div>
       </nav>
 
-      {/* Mobile Dropdown Menu */}
-      {menuOpen && (
-        <div className="border-t border-white/10 bg-[#1a2b4a] md:hidden">
-          <ul className="flex flex-col px-4 py-4 sm:px-6">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="block py-3 text-base font-medium text-white transition-colors hover:text-[#c9a84c]"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-            <li className="pt-2">
-              <a
-                href="tel:0661141811"
-                className="block rounded-md bg-[#c9a84c] px-4 py-3 text-center text-base font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e]"
+      {/* Modern Animated Mobile Dropdown Menu */}
+      <div 
+        className={`overflow-hidden border-white/10 bg-[#1a2b4a] md:hidden transition-all duration-300 ease-in-out ${
+          menuOpen 
+            ? "max-h-[400px] opacity-100 border-t" 
+            : "max-h-0 opacity-0 pointer-events-none"
+        }`}
+      >
+        <ul className={`flex flex-col px-4 py-4 sm:px-6 transition-all duration-500 delay-75 transform ${
+          menuOpen ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
+        }`}>
+          {navLinks.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                className="block py-3 text-base font-medium text-white transition-colors hover:text-[#c9a84c]"
+                onClick={() => setMenuOpen(false)}
               >
-                0661141811
-              </a>
+                {link.label}
+              </Link>
             </li>
-            <li className="pt-4 mt-4 border-t border-white/10">
-              <LanguageSwitcher />
-            </li>
-          </ul>
-        </div>
-      )}
+          ))}
+          <li className="pt-2">
+            <a
+              href="tel:0661141811"
+              className="block rounded-md bg-[#c9a84c] px-4 py-3 text-center text-base font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e]"
+            >
+              0661141811
+            </a>
+          </li>
+          <li className="pt-4 mt-4 border-t border-white/10">
+            <LanguageSwitcher />
+          </li>
+        </ul>
+      </div>
     </header>
   );
 }
