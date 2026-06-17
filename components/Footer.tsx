@@ -126,10 +126,10 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:contact@latourimmo.ma"
+                  href="mailto:latourimmo.rabat@gmail.com"
                   className="transition-colors hover:text-[#c9a84c]"
                 >
-                  contact@latourimmo.ma
+                  latourimmo.rabat@gmail.com
                 </a>
               </li>
               <li>
