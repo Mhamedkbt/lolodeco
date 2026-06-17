@@ -162,9 +162,12 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Dropdown Menu */}
-      {menuOpen && (
-        <div className="border-t border-white/10 bg-[#1a2b4a] md:hidden">
+      {/* Smooth Mobile Dropdown Menu Container */}
+      <div 
+        className={`grid transition-[grid-template-rows] duration-300 ease-in-out md:hidden
+                    ${menuOpen ? "grid-rows-[1fr] border-t border-white/10" : "grid-rows-[0fr]"}`}
+      >
+        <div className="overflow-hidden bg-[#1a2b4a]">
           <ul className="flex flex-col px-4 py-4 sm:px-6">
             {navLinks.map((link) => (
               <li key={link.href}>
@@ -190,7 +193,7 @@ export default function Navbar() {
             </li>
           </ul>
         </div>
-      )}
+      </div>
     </header>
   );
 }

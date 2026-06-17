@@ -40,18 +40,14 @@ const languages = [
     label: 'العربية',
     short: 'ع',
     flag: (
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className="h-4 w-6 rounded-sm overflow-hidden flex-shrink-0">
-  {/* Red Background */}
-  <rect width="900" height="600" fill="#c1272d"/>
-  {/* Green Interlaced Pentagram Star */}
-  <path 
-    d="M450,162 L484,267 L573,199 L539,304 L628,372 L518,372 L450,478 L382,372 L272,372 L361,304 L327,199 L416,267 Z 
-       M450,225 L427,294 L362,247 L387,323 L322,372 L402,372 L450,447 L498,372 L578,372 L513,323 L538,247 L473,294 Z" 
-    fill="#006233"
-  />
-</svg>
-
-
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className="h-4 w-6 rounded-sm overflow-hidden flex-shrink-0">
+        <rect width="900" height="600" fill="#c1272d"/>
+        <path 
+          d="M450,162 L484,267 L573,199 L539,304 L628,372 L518,372 L450,478 L382,372 L272,372 L361,304 L327,199 L416,267 Z 
+             M450,225 L427,294 L362,247 L387,323 L322,372 L402,372 L450,447 L498,372 L578,372 L513,323 L538,247 L473,294 Z" 
+          fill="#006233"
+        />
+      </svg>
     ),
   },
   {
@@ -59,12 +55,9 @@ const languages = [
     label: 'Español',
     short: 'ES',
     flag: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" className="h-4 w-6 rounded-sm overflow-hidden flex-shrink-0">
-        {/* Spanish Triband Layout */}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" className="h-4 w-6 rounded-sm overflow-hidden flex-shrink-0">
         <rect width="750" height="500" fill="#a5001a"/>
         <rect y="125" width="750" height="250" fill="#fabd00"/>
-        
-        {/* Simplified Spanish Coat of Arms */}
         <g transform="translate(190, 185) scale(0.9)">
           <path d="M0,40 L0,90 C0,115 40,115 40,90 L40,40 Z" fill="#a5001a" stroke="#fabd00" strokeWidth="8"/>
           <path d="M0,40 L0,90 C0,115 40,115 40,90 L40,40 Z" fill="#fabd00"/>
@@ -84,6 +77,7 @@ export default function LanguageSwitcher() {
   const locale = useLocale()
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const [openUpward, setOpenUpward] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   const current = languages.find((l) => l.code === locale) ?? languages[0]
@@ -92,6 +86,21 @@ export default function LanguageSwitcher() {
     const segments = pathname.split('/')
     segments[1] = newLocale
     window.location.href = segments.join('/')
+  }
+
+  // Check spatial clearance when opened
+  const toggleDropdown = () => {
+    if (!open && ref.current) {
+      const rect = ref.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      // If remaining room under switcher component is less than 210px, display onto top instead
+      if (spaceBelow < 210) {
+        setOpenUpward(true)
+      } else {
+        setOpenUpward(false)
+      }
+    }
+    setOpen(!open)
   }
 
   useEffect(() => {
@@ -109,7 +118,7 @@ export default function LanguageSwitcher() {
 
       {/* Trigger Button */}
       <button
-        onClick={() => setOpen(!open)}
+        onClick={toggleDropdown}
         className="flex items-center gap-2 rounded-lg border border-white/20 
                    bg-white/10 px-3 py-2 text-white backdrop-blur-sm 
                    transition-all duration-200 hover:bg-white/20 
@@ -128,12 +137,12 @@ export default function LanguageSwitcher() {
         </svg>
       </button>
 
-      {/* Dropdown */}
+      {/* Smart Positioning Dropdown */}
       {open && (
         <div
-          className="absolute right-0 top-full z-[9999] mt-2 w-44 
-                     overflow-hidden rounded-xl border border-gray-100 
-                     bg-white shadow-2xl"
+          className={`absolute left-0 sm:left-auto sm:right-0 z-[9999] w-44 overflow-hidden 
+                      rounded-xl border border-gray-100 bg-white shadow-2xl
+                      ${openUpward ? 'bottom-full mb-2' : 'top-full mt-2'}`}
         >
           {languages.map((lang) => (
             <button
