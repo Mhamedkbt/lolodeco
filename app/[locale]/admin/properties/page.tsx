@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Squares2X2Icon,
   ClipboardDocumentCheckIcon,
@@ -20,10 +21,10 @@ const isVideoUrl = (url: string): boolean => {
 const isVideoFile = (file: File): boolean => file.type.startsWith('video/')
 
 const navItems = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: "dashboard" },
-  { label: "Properties", href: "/admin/properties", icon: "properties" },
-  { label: "Messages", href: "/admin/messages", icon: "messages" },
-  { label: "Evaluations", href: "/admin/evaluations", icon: "evaluations" },
+  { labelKey: "nav_dashboard", href: "/admin/dashboard", icon: "dashboard" },
+  { labelKey: "nav_properties", href: "/admin/properties", icon: "properties" },
+  { labelKey: "nav_messages", href: "/admin/messages", icon: "messages" },
+  { labelKey: "nav_evaluations", href: "/admin/evaluations", icon: "evaluations" },
 ];
 
 function getIcon(iconType: string) {
@@ -65,6 +66,8 @@ interface Property {
 
 export default function PropertiesPage() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("admin");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -101,13 +104,13 @@ export default function PropertiesPage() {
       try {
         const { data, error } = await supabase.auth.getSession();
         if (error || !data.session) {
-          router.push("/admin");
+          router.push(`/${locale}/admin`);
           return;
         }
         setIsCheckingAuth(false);
         await fetchProperties();
       } catch (err) {
-        router.push("/admin");
+        router.push(`/${locale}/admin`);
       }
     }
 
@@ -137,7 +140,7 @@ export default function PropertiesPage() {
     setLogoutLoading(true);
     try {
       await supabase.auth.signOut();
-      router.push("/admin");
+      router.push(`/${locale}/admin`);
     } catch (err) {
       setLogoutLoading(false);
     }
@@ -526,7 +529,7 @@ export default function PropertiesPage() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#c9a84c]"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">{t("loading")}</p>
         </div>
       </div>
     );
@@ -552,12 +555,12 @@ export default function PropertiesPage() {
             {navItems.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={`/${locale}${item.href}`}
                 onClick={closeSidebar}
                 className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-white/10 focus:outline-none focus:bg-white/10"
               >
                 <span className="text-[#c9a84c]">{getIcon(item.icon)}</span>
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
           </nav>
@@ -571,7 +574,7 @@ export default function PropertiesPage() {
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
               </svg>
-              {logoutLoading ? "Logging out..." : "Logout"}
+              {logoutLoading ? t("logging_out") : t("logout")}
             </button>
           </div>
         </div>
@@ -608,7 +611,7 @@ export default function PropertiesPage() {
 
           <div className="mt-8 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">Manage Properties</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">{t("manage_properties_title")}</h2>
               <p className="mt-1 text-sm text-gray-600">{filteredProperties.length} properties</p>
             </div>
             <button
@@ -618,14 +621,14 @@ export default function PropertiesPage() {
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              Add New Property
+              {t("add_property")}
             </button>
           </div>
 
           <div className="mb-6 flex flex-col sm:flex-row gap-4 w-full">
             <input
               type="text"
-              placeholder="Search by title or city..."
+              placeholder={t("search_placeholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-[#1a2b4a] placeholder:text-gray-400 focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 flex-1"
@@ -635,45 +638,45 @@ export default function PropertiesPage() {
               onChange={(e) => setFilterType(e.target.value)}
               className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-[#1a2b4a] focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 sm:min-w-[150px]"
             >
-              <option value="">All Types</option>
-              <option value="Apartment">Apartment</option>
-              <option value="Villa">Villa</option>
-              <option value="Land">Land</option>
-              <option value="Commercial">Commercial</option>
+              <option value="">{t("all_types")}</option>
+              <option value="Apartment">{t("apartment")}</option>
+              <option value="Villa">{t("villa")}</option>
+              <option value="Land">{t("land")}</option>
+              <option value="Commercial">{t("commercial")}</option>
             </select>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
               className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-[#1a2b4a] focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 sm:min-w-[150px]"
             >
-              <option value="">All Statuses</option>
-              <option value="Sale">Sale</option>
-              <option value="Rent">Rent</option>
+              <option value="">{t("all_statuses")}</option>
+              <option value="Sale">{t("sale")}</option>
+              <option value="Rent">{t("rent")}</option>
             </select>
           </div>
 
           {loading ? (
             <div className="rounded-xl border border-gray-100 bg-white p-8 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#c9a84c]"></div>
-              <p className="mt-3 text-gray-600">Loading properties...</p>
+              <p className="mt-3 text-gray-600">{t("loading_properties")}</p>
             </div>
           ) : filteredProperties.length === 0 ? (
             <div className="rounded-xl border border-gray-100 bg-white p-8 text-center">
-              <p className="text-gray-600">No properties found</p>
+              <p className="text-gray-600">{t("no_properties")}</p>
             </div>
           ) : (
             <div className="w-full overflow-x-auto rounded-xl border border-gray-100 shadow-md">
               <table className="w-full">
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">Image</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">Title</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">City</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">Type</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">Price</th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-[#1a2b4a]">Featured</th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-[#1a2b4a]">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">{t("image")}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">{t("title")}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">{t("city")}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">{t("type")}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">{t("status")}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#1a2b4a]">{t("price")}</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-[#1a2b4a]">{t("featured")}</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-[#1a2b4a]">{t("actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -773,7 +776,7 @@ export default function PropertiesPage() {
                 </svg>
               </button>
               <h3 className="text-2xl font-bold text-[#1a2b4a]">
-                {editingPropertyId ? "Edit Property" : "Add New Property"}
+                {editingPropertyId ? t("edit_property") : t("add_property")}
               </h3>
             </div>
 
@@ -786,7 +789,7 @@ export default function PropertiesPage() {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-[#1a2b4a]">Title *</label>
+                  <label className="block text-sm font-medium text-[#1a2b4a]">{t("title_required")}</label>
                   <input
                     type="text"
                     required
@@ -797,7 +800,7 @@ export default function PropertiesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#1a2b4a]">Type *</label>
+                  <label className="block text-sm font-medium text-[#1a2b4a]">{t("type_required")}</label>
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
@@ -813,7 +816,7 @@ export default function PropertiesPage() {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-[#1a2b4a]">City *</label>
+                  <label className="block text-sm font-medium text-[#1a2b4a]">{t("city_required")}</label>
                   <input
                     type="text"
                     required
@@ -824,7 +827,7 @@ export default function PropertiesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#1a2b4a]">Price (MAD) *</label>
+                  <label className="block text-sm font-medium text-[#1a2b4a]">{t("price_required")}</label>
                   <input
                     type="number"
                     required
@@ -838,7 +841,7 @@ export default function PropertiesPage() {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-[#1a2b4a]">Surface (m²)</label>
+                  <label className="block text-sm font-medium text-[#1a2b4a]">{t("surface_label")}</label>
                   <input
                     type="number"
                     placeholder="Surface"
@@ -848,7 +851,7 @@ export default function PropertiesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#1a2b4a]">Rooms</label>
+                  <label className="block text-sm font-medium text-[#1a2b4a]">{t("rooms_label")}</label>
                   <input
                     type="number"
                     placeholder="Number of rooms"
@@ -860,7 +863,7 @@ export default function PropertiesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#1a2b4a]">Status *</label>
+                <label className="block text-sm font-medium text-[#1a2b4a]">{t("status_required")}</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -872,7 +875,7 @@ export default function PropertiesPage() {
               </div>
 
 <div>
-  <label className="block text-sm font-medium text-[#1a2b4a]">Description</label>
+  <label className="block text-sm font-medium text-[#1a2b4a]">{t("description_label")}</label>
   <textarea
     placeholder="Property description"
     rows={6}
@@ -897,7 +900,7 @@ export default function PropertiesPage() {
 
               {(existingImages.length > 0 || previewImages.length > 0) && (
                 <div>
-                  <label className="block text-sm font-medium text-[#1a2b4a] mb-3">Current Images</label>
+                  <label className="block text-sm font-medium text-[#1a2b4a] mb-3">{t("current_images")}</label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {existingImages.map((imageUrl, index) => (
                       <div key={`existing-${index}`} className="relative group">
@@ -1029,7 +1032,7 @@ export default function PropertiesPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-[#1a2b4a]">Upload Photos & Videos</label>
+                <label className="block text-sm font-medium text-[#1a2b4a]">{t("upload_photos")}</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -1048,14 +1051,14 @@ export default function PropertiesPage() {
                   onClick={() => cleanupAndClose()}
                   className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400"
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
                   className="rounded-lg bg-[#c9a84c] px-6 py-2.5 text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#c9a84c]"
                 >
-                  {isSaving ? "Saving..." : editingPropertyId ? "Update Property" : "Save Property"}
+                  {isSaving ? t("saving") : t("save")}
                 </button>
               </div>
             </form>
@@ -1069,11 +1072,11 @@ export default function PropertiesPage() {
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-red-500 text-3xl">🗑️</span>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Property</h3>
-            <p className="text-gray-500 mb-6">Are you sure? This action cannot be undone.</p>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">{t("delete_property")}</h3>
+            <p className="text-gray-500 mb-6">{t("delete_confirm")}</p>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
-              <button onClick={() => { handleDeleteProperty(deleteId); setDeleteId(null); }} className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Delete</button>
+              <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">{t("cancel")}</button>
+              <button onClick={() => { handleDeleteProperty(deleteId); setDeleteId(null); }} className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">{t("delete")}</button>
             </div>
           </div>
         </div>

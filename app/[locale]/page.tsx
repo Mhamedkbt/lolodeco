@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { TestimonialsSlider } from "../components/TestimonialsSlider";
+import { TestimonialsSlider } from "@/components/TestimonialsSlider";
+import { useTranslations, useLocale } from "next-intl";
+
+export const dynamic = "force-dynamic";
 
 const isVideoUrl = (url: string): boolean => {
   return /\.(mp4|webm|mov|avi|quicktime)(\?|$)/i.test(url);
@@ -33,6 +36,8 @@ const statsData = [
 
 export default function Home() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("home");
   const [city, setCity] = useState("");
   const [type, setType] = useState("");
   const [status, setStatus] = useState("");
@@ -137,7 +142,7 @@ export default function Home() {
     if (type) params.set("type", type);
     if (status) params.set("status", status);
     const query = params.toString();
-    router.push(query ? `/properties?${query}` : "/properties");
+    router.push(query ? `/${locale}/properties?${query}` : `/${locale}/properties`);
   }
 
   return (
@@ -184,10 +189,10 @@ export default function Home() {
 
         <div className="relative z-10 mx-auto w-full max-w-5xl text-center animate-[contentEntrance_1s_ease-out_forwards]">
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-md">
-            Find Your Dream Property in Morocco
+            {t("hero_title")}
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-300 sm:text-xl drop-shadow-sm font-light">
-            Luxury villas, apartments and commercial spaces across Morocco
+            {t("hero_subtitle")}
           </p>
 
           <form
@@ -197,12 +202,12 @@ export default function Home() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-2">
               <div className="text-left px-2">
                 <label htmlFor="city" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#1a2b4a]">
-                  City
+                  {t("search_city_label")}
                 </label>
                 <input
                   id="city"
                   type="text"
-                  placeholder="Casablanca, Marrakech..."
+                  placeholder={t("search_city_placeholder")}
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   className="w-full rounded-lg border border-gray-200 bg-gray-50/50 px-4 py-3 text-[#1a2b4a] transition-all placeholder:text-gray-400 focus:border-[#c9a84c] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
@@ -211,7 +216,7 @@ export default function Home() {
 
               <div className="text-left px-2">
                 <label htmlFor="type" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#1a2b4a]">
-                  Type
+                  {t("search_type_label")}
                 </label>
                 <select
                   id="type"
@@ -219,17 +224,17 @@ export default function Home() {
                   onChange={(e) => setType(e.target.value)}
                   className="w-full rounded-lg border border-gray-200 bg-gray-50/50 px-4 py-3 text-[#1a2b4a] transition-all focus:border-[#c9a84c] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
                 >
-                  <option value="">All types</option>
-                  <option value="apartment">Apartment</option>
-                  <option value="villa">Villa</option>
-                  <option value="land">Land</option>
-                  <option value="commercial">Commercial</option>
+                  <option value="">{t("search_type_placeholder")}</option>
+                  <option value="apartment">{t("apartment")}</option>
+                  <option value="villa">{t("villa")}</option>
+                  <option value="land">{t("land")}</option>
+                  <option value="commercial">{t("commercial")}</option>
                 </select>
               </div>
 
               <div className="text-left px-2">
                 <label htmlFor="status" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#1a2b4a]">
-                  Status
+                  {t("search_status_label")}
                 </label>
                 <select
                   id="status"
@@ -237,9 +242,9 @@ export default function Home() {
                   onChange={(e) => setStatus(e.target.value)}
                   className="w-full rounded-lg border border-gray-200 bg-gray-50/50 px-4 py-3 text-[#1a2b4a] transition-all focus:border-[#c9a84c] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
                 >
-                  <option value="">Sale or Rent</option>
-                  <option value="sale">Sale</option>
-                  <option value="rent">Rent</option>
+                  <option value="">{t("search_status_placeholder")}</option>
+                  <option value="sale">{t("sale")}</option>
+                  <option value="rent">{t("rent")}</option>
                 </select>
               </div>
 
@@ -251,7 +256,7 @@ export default function Home() {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  Search
+                  {t("search_button")}
                 </button>
               </div>
             </div>
@@ -264,10 +269,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-[#1a2b4a] sm:text-4xl">
-              Featured Properties
+              {t("featured_title")}
             </h2>
             <p className="mt-3 text-lg text-gray-500">
-              Discover our handpicked luxury properties
+              {t("featured_subtitle")}
             </p>
           </div>
 
@@ -306,8 +311,8 @@ export default function Home() {
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
               </div>
-              <p className="text-xl font-semibold text-[#1a2b4a]">No featured properties yet</p>
-              <p className="mt-2 text-gray-500">Check back soon for our latest listings.</p>
+              <p className="text-xl font-semibold text-[#1a2b4a]">{t("featured_empty")}</p>
+              <p className="mt-2 text-gray-500">{t("featured_empty_sub")}</p>
             </div>
           )}
 
@@ -384,8 +389,8 @@ export default function Home() {
                     <div className="mt-3 pt-4 border-t border-gray-50 flex items-center justify-between">
                       <p className="text-lg font-bold text-[#1a2b4a] tracking-tight">
                         {property.price
-                          ? `${property.price.toLocaleString()} MAD`
-                          : "Price on request"}
+                      ? `${property.price.toLocaleString()} MAD`
+                      : t("price_on_request")}
                       </p>
                       <p className="text-sm text-gray-400 font-light tracking-wide">
                         {property.surface ? `${property.surface} m²` : "—"}
@@ -393,12 +398,12 @@ export default function Home() {
                     </div>
 
                     <Link
-                      href={`/properties/${property.id}`}
+                      href={`/${locale}/properties/${property.id}`}
                       className="mt-5 block w-full rounded-xl bg-[#c9a84c] py-3.5 text-center 
                                  text-sm font-semibold text-[#1a2b4a] transition-all duration-200 
                                  hover:bg-[#d4b85e] shadow-xs hover:shadow-sm"
                     >
-                      View Details
+                      {t("view_details")}
                     </Link>
                   </div>
                 </article>
@@ -409,12 +414,12 @@ export default function Home() {
           {!loadingProperties && featuredProperties.length > 0 && (
             <div className="mt-14 text-center">
               <Link
-                href="/properties"
+                href={`/${locale}/properties`}
                 className="inline-block rounded-xl border-2 border-[#1a2b4a] px-10 py-3.5 
                            font-semibold text-[#1a2b4a] transition-all duration-200 
                            hover:bg-[#1a2b4a] hover:text-white"
               >
-                View All Properties
+                {t("view_all")}
               </Link>
             </div>
           )}
@@ -430,7 +435,7 @@ export default function Home() {
                 {counts[idx]}{stat.suffix}
               </p>
               <p className="mt-2 text-sm font-medium tracking-wide text-white/90 sm:text-base">
-                {stat.label}
+                {t(`stat_${stat.label.toLowerCase().replace(/\s+/g, "_")}`)}
               </p>
             </div>
           ))}
@@ -442,26 +447,19 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-[#1a2b4a] sm:text-4xl">
-              About LaTour Immo
+              {t("about_title")}
             </h2>
             <p className="mt-6 leading-relaxed text-gray-600 font-light">
-              LaTour Immo is a leading real estate agency in Morocco, dedicated
-              to helping clients find exceptional properties across the
-              kingdom. With over a decade of experience, we specialize in
-              luxury villas, modern apartments, and premium commercial spaces
-              in Morocco&apos;s most sought-after cities.
+              {t("about_p1")}
             </p>
             <p className="mt-4 leading-relaxed text-gray-600 font-light">
-              Our team of expert agents provides personalized service, guiding
-              you through every step of buying, selling, or renting your
-              perfect property. Trust LaTour Immo to turn your real estate dreams
-              into reality.
+              {t("about_p2")}
             </p>
             <Link
-              href="/contact"
+              href={`/${locale}/contact`}
               className="mt-8 inline-block rounded-xl bg-[#c9a84c] px-8 py-3.5 font-bold text-[#1a2b4a] shadow-sm transition-all hover:bg-[#d4b85e] hover:shadow"
             >
-              Contact Us
+              {t("contact_us")}
             </Link>
           </div>
           <div className="relative h-[450px] overflow-hidden rounded-2xl shadow-xl bg-gray-100 group">

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { useTranslations, useLocale } from "next-intl";
 
 import {
   Squares2X2Icon,
@@ -25,10 +26,10 @@ interface Message {
 }
 
 const navItems = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: "dashboard" },
-  { label: "Properties", href: "/admin/properties", icon: "properties" },
-  { label: "Messages", href: "/admin/messages", icon: "messages" },
-  { label: "Evaluations", href: "/admin/evaluations", icon: "evaluations" },
+  { labelKey: "nav_dashboard", href: "/admin/dashboard", icon: "dashboard" },
+  { labelKey: "nav_properties", href: "/admin/properties", icon: "properties" },
+  { labelKey: "nav_messages", href: "/admin/messages", icon: "messages" },
+  { labelKey: "nav_evaluations", href: "/admin/evaluations", icon: "evaluations" },
 ];
 
 function getIcon(iconType: string) {
@@ -56,6 +57,8 @@ function getIcon(iconType: string) {
 
 export default function MessagesPage() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("admin");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -71,13 +74,13 @@ export default function MessagesPage() {
       try {
         const { data, error } = await supabase.auth.getSession();
         if (error || !data.session) {
-          router.push("/admin");
+          router.push(`/${locale}/admin`);
           return;
         }
         setIsCheckingAuth(false);
         await fetchMessages();
       } catch (err) {
-        router.push("/admin");
+        router.push(`/${locale}/admin`);
       }
     }
 
@@ -104,7 +107,7 @@ export default function MessagesPage() {
     setLogoutLoading(true);
     try {
       await supabase.auth.signOut();
-      router.push("/admin");
+      router.push(`/${locale}/admin`);
     } catch (err) {
       setLogoutLoading(false);
     }
@@ -201,7 +204,7 @@ export default function MessagesPage() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#c9a84c]"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">{t("loading")}</p>
         </div>
       </div>
     );
@@ -219,12 +222,12 @@ export default function MessagesPage() {
             {navItems.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={`/${locale}${item.href}`}
                 onClick={closeSidebar}
                 className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-white/10 focus:outline-none focus:bg-white/10"
               >
                 <span className="text-[#c9a84c]">{getIcon(item.icon)}</span>
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
           </nav>
@@ -238,7 +241,7 @@ export default function MessagesPage() {
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
               </svg>
-              {logoutLoading ? "Logging out..." : "Logout"}
+              {logoutLoading ? t("logging_out") : t("logout")}
             </button>
           </div>
         </div>
@@ -268,14 +271,14 @@ export default function MessagesPage() {
           </button>
 
           <div className="mt-8 mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">Manage Messages</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">{t("manage_messages_title")}</h2>
             <p className="mt-1 text-sm text-gray-600">{messages.length} message{messages.length !== 1 ? "s" : ""}</p>
           </div>
 
           {loading ? (
             <div className="rounded-xl border border-gray-100 bg-white p-8 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#c9a84c]"></div>
-              <p className="mt-3 text-gray-600">Loading messages...</p>
+              <p className="mt-3 text-gray-600">{t("loading_messages")}</p>
             </div>
           ) : messages.length === 0 ? (
             <div className="rounded-xl border border-gray-100 bg-white p-12 text-center">
@@ -443,7 +446,7 @@ export default function MessagesPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-sm bg-white rounded-xl shadow-2xl">
             <div className="p-6 sm:p-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Message</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t("delete_message")}</h3>
               <p className="text-gray-700 mb-6">Are you sure you want to permanently delete this message? This action cannot be undone.</p>
               
               <div className="flex gap-3 justify-end">
@@ -458,7 +461,7 @@ export default function MessagesPage() {
                   disabled={isDeleting}
                   className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
-                  {isDeleting ? "Deleting..." : "Delete"}
+                  {isDeleting ? t("deleting") : t("delete")}
                 </button>
               </div>
             </div>

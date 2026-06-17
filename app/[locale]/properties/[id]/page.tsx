@@ -1,9 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { FormEvent, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useTranslations, useLocale } from 'next-intl'
+
+export const dynamic = 'force-dynamic'
 
 const isVideoUrl = (url: string): boolean => {
   return /\.(mp4|webm|mov|avi|quicktime)(\?|$)/i.test(url)
@@ -33,7 +36,10 @@ interface ContactForm {
 
 export default function PropertyPage() {
   const params = useParams()
+  const router = useRouter()
   const id = typeof params.id === 'string' ? params.id : ''
+  const locale = useLocale()
+  const t = useTranslations("property_detail")
 
   const [property, setProperty] = useState<Property | null>(null)
   const [similarProperties, setSimilarProperties] = useState<Property[]>([])
@@ -137,7 +143,7 @@ export default function PropertyPage() {
 
     if (error) {
       console.error('Error sending message:', error)
-      setFormError('Failed to send message. Please try again.')
+      setFormError(t('form_error'))
       setFormSending(false)
       return
     }
@@ -152,7 +158,7 @@ export default function PropertyPage() {
       <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="text-center">
           <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-[#c9a84c] border-t-transparent" />
-          <p className="mt-4 text-gray-500">Loading property...</p>
+          <p className="mt-4 text-gray-500">{t('loading')}</p>
         </div>
       </div>
     )
@@ -179,16 +185,16 @@ export default function PropertyPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-[#1a2b4a]">
-            Property Not Found
+            {t('property_not_found')}
           </h1>
           <p className="mt-2 text-gray-500">
-            This property may have been removed or doesn&apos;t exist.
+            {t('not_found_desc')}
           </p>
           <Link
-            href="/properties"
+            href={`/${locale}/properties`}
             className="mt-6 inline-block rounded-lg bg-[#c9a84c] px-8 py-3 font-semibold text-[#1a2b4a] hover:bg-[#d4b85e] transition-colors"
           >
-            Browse All Properties
+            {t('browse_all')}
           </Link>
         </div>
       </div>
@@ -205,16 +211,16 @@ export default function PropertyPage() {
       <p className="text-3xl font-bold text-[#c9a84c] sm:text-4xl">
         {property.price
           ? `${property.price.toLocaleString()} MAD`
-          : 'Price on request'}
+          : t('price_on_request')}
       </p>
 
       <ul className="mt-6 space-y-4">
         {[
-          { label: 'Rooms', value: property.rooms ?? '—' },
-          { label: 'Surface', value: property.surface ? `${property.surface} m²` : '—' },
-          { label: 'Type', value: property.type ?? '—' },
-          { label: 'Status', value: property.status ?? '—' },
-          { label: 'City', value: property.city ?? '—' },
+          { label: t('rooms'), value: property.rooms ?? '—' },
+          { label: t('surface'), value: property.surface ? `${property.surface} m²` : '—' },
+          { label: t('type'), value: property.type ?? '—' },
+          { label: t('status'), value: property.status ?? '—' },
+          { label: t('city'), value: property.city ?? '—' },
         ].map((detail) => (
           <li
             key={detail.label}
@@ -235,7 +241,7 @@ export default function PropertyPage() {
         <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
         </svg>
-        Contact on WhatsApp
+        {t('contact_whatsapp')}
       </a>
     </>
   )
@@ -244,19 +250,19 @@ export default function PropertyPage() {
   const requestInfoFormContent = (
     <>
       <h3 className="text-lg font-bold text-[#1a2b4a]">
-        Request Information
+        {t('request_information')}
       </h3>
       <p className="mt-1 text-sm text-gray-500">
-        Fill out the form and we&apos;ll get back to you shortly.
+        {t('fill_form')}
       </p>
 
       {formSent ? (
         <div className="mt-6 rounded-lg bg-green-50 px-4 py-4 text-center">
           <p className="text-sm font-semibold text-green-700">
-            ✅ Message sent successfully!
+            ✅ {t('message_sent')}
           </p>
           <p className="mt-1 text-xs text-green-600">
-            We&apos;ll get back to you as soon as possible.
+            {t('message_sent_sub')}
           </p>
         </div>
       ) : (
@@ -268,13 +274,13 @@ export default function PropertyPage() {
           )}
           <div>
             <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-[#1a2b4a]">
-              Name
+              {t('name')}
             </label>
             <input
               id="name"
               type="text"
               required
-              placeholder="Your name"
+              placeholder={t('name_placeholder')}
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-[#1a2b4a] placeholder:text-gray-400 focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
@@ -282,13 +288,13 @@ export default function PropertyPage() {
           </div>
           <div>
             <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-[#1a2b4a]">
-              Phone
+              {t('phone')}
             </label>
             <input
               id="phone"
               type="tel"
               required
-              placeholder="06 XX XX XX XX"
+              placeholder={t('phone_placeholder')}
               value={form.phone}
               onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
               className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-[#1a2b4a] placeholder:text-gray-400 focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
@@ -296,13 +302,13 @@ export default function PropertyPage() {
           </div>
           <div>
             <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-[#1a2b4a]">
-              Email
+              {t('email')}
             </label>
             <input
               id="email"
               type="email"
               required
-              placeholder="you@example.com"
+              placeholder={t('email_placeholder')}
               value={form.email}
               onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
               className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-[#1a2b4a] placeholder:text-gray-400 focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
@@ -310,13 +316,13 @@ export default function PropertyPage() {
           </div>
           <div>
             <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-[#1a2b4a]">
-              Message
+              {t('message')}
             </label>
             <textarea
               id="message"
               required
               rows={4}
-              placeholder="I'm interested in this property..."
+              placeholder={t('message_placeholder')}
               value={form.message}
               onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
               className="w-full resize-none rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-[#1a2b4a] placeholder:text-gray-400 focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
@@ -327,7 +333,7 @@ export default function PropertyPage() {
             disabled={formSending}
             className="w-full rounded-lg bg-[#c9a84c] px-6 py-3 text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e] focus:outline-none focus:ring-2 focus:ring-[#c9a84c] focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {formSending ? 'Sending...' : 'Send Message'}
+            {formSending ? t('sending') : t('send_message')}
           </button>
         </form>
       )}
@@ -383,7 +389,7 @@ export default function PropertyPage() {
               {property.city ?? '—'} · {property.type ?? '—'}
             </p>
             <h1 className="mt-2 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-              {property.title ?? 'Property Details'}
+              {property.title ?? t('property_details')}
             </h1>
           </div>
         </div>
@@ -481,17 +487,14 @@ export default function PropertyPage() {
             {/* DESCRIPTION SECTION */}
             <div>
               <h2 className="text-2xl font-bold text-[#1a2b4a] sm:text-3xl">
-                Description
+                {t('description')}
               </h2>
               <div className="mt-2 h-1 w-16 rounded-full bg-[#c9a84c]" />
               <p className="whitespace-pre-line text-[#1a2b4a] leading-relaxed">
   {property.description}
 </p>
               <p className="mt-4 leading-relaxed text-gray-600">
-                Contact LaTour Immo today to schedule a private viewing. Our
-                experienced agents will guide you through every step of the
-                process, ensuring a seamless experience from first visit to
-                final signature.
+                {t('viewing_text')}
               </p>
             </div>
 
@@ -504,7 +507,7 @@ export default function PropertyPage() {
             {similarProperties.length > 0 && (
               <div className="mt-14">
                 <h2 className="text-2xl font-bold text-[#1a2b4a] sm:text-3xl">
-                  Similar Properties
+                  {t('similar_properties')}
                 </h2>
                 <div className="mt-2 h-1 w-16 rounded-full bg-[#c9a84c]" />
                 <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -559,13 +562,13 @@ export default function PropertyPage() {
                           {item.city ?? '—'} · {item.surface ? `${item.surface} m²` : '—'}
                         </p>
                         <p className="mt-2 font-bold text-[#c9a84c]">
-                          {item.price ? `${item.price.toLocaleString()} MAD` : 'Price on request'}
+                          {item.price ? `${item.price.toLocaleString()} MAD` : t('price_on_request')}
                         </p>
                         <Link
-                          href={`/properties/${item.id}`}
+                          href={`/${locale}/properties/${item.id}`}
                           className="mt-3 block w-full rounded-lg bg-[#c9a84c] py-2.5 text-center text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e]"
                         >
-                          View Details
+                          {t('view_details')}
                         </Link>
                       </div>
                     </article>

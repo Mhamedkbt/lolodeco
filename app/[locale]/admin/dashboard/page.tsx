@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-
+import { useTranslations, useLocale } from "next-intl";
 import {
   Squares2X2Icon,
   Cog6ToothIcon,
@@ -15,22 +15,20 @@ import {
   StarIcon,
 } from "@heroicons/react/24/outline";
 
+export const dynamic = "force-dynamic";
+
 const navItems = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: "dashboard" },
-  { label: "Properties", href: "/admin/properties", icon: "properties" },
-  { label: "Messages", href: "/admin/messages", icon: "messages" },
-  { label: "Evaluations", href: "/admin/evaluations", icon: "evaluations" },
+  { labelKey: "nav_dashboard", href: "/admin/dashboard", icon: "dashboard" },
+  { labelKey: "nav_properties", href: "/admin/properties", icon: "properties" },
+  { labelKey: "nav_messages", href: "/admin/messages", icon: "messages" },
+  { labelKey: "nav_evaluations", href: "/admin/evaluations", icon: "evaluations" },
 ];
 
 const dashboardStatCards = [
-  { label: "Total Properties", key: "totalProperties", icon: "building" },
-  { label: "Total Messages", key: "totalMessages", icon: "envelope" },
-  {
-    label: "Total Evaluations",
-    key: "totalEvaluations",
-    icon: "evaluations",
-  },
-  { label: "Featured Properties", key: "featuredProperties", icon: "star" },
+  { labelKey: "stat_total_properties", key: "totalProperties", icon: "building" },
+  { labelKey: "stat_total_messages", key: "totalMessages", icon: "envelope" },
+  { labelKey: "stat_total_evaluations", key: "totalEvaluations", icon: "evaluations" },
+  { labelKey: "stat_featured_properties", key: "featuredProperties", icon: "star" },
 ];
 
 function getIcon(iconType: string) {
@@ -77,6 +75,8 @@ function getIcon(iconType: string) {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("admin");
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -93,12 +93,12 @@ export default function DashboardPage() {
       try {
         const { data, error } = await supabase.auth.getSession();
         if (error || !data.session) {
-          router.push("/admin");
+          router.push(`/${locale}/admin`);
           return;
         }
         setIsCheckingAuth(false);
       } catch (_err) {
-        router.push("/admin");
+        router.push(`/${locale}/admin`);
       }
     }
 
@@ -149,7 +149,7 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       await supabase.auth.signOut();
-      router.push("/admin");
+      router.push(`/${locale}/admin`);
     } catch (_err) {
       setLoading(false);
     }
@@ -164,7 +164,7 @@ export default function DashboardPage() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#c9a84c]"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+          <p className="mt-4 text-gray-600">{t("loading_dashboard")}</p>
         </div>
       </div>
     );
@@ -182,12 +182,12 @@ export default function DashboardPage() {
             {navItems.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={`/${locale}${item.href}`}
                 onClick={closeSidebar}
                 className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-white/10 focus:outline-none focus:bg-white/10"
               >
                 <span className="text-[#c9a84c]">{getIcon(item.icon)}</span>
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
           </nav>
@@ -201,7 +201,7 @@ export default function DashboardPage() {
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
               </svg>
-              {loading ? "Logging out..." : "Logout"}
+              {loading ? t("logging_out") : t("logout")}
             </button>
           </div>
         </div>
@@ -231,20 +231,20 @@ export default function DashboardPage() {
           </button>
 
           <div className="mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">Dashboard</h2>
-            <p className="mt-2 text-sm sm:text-base text-gray-600">Welcome to LaTour Immo Admin Panel</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">{t("dashboard_title")}</h2>
+            <p className="mt-2 text-sm sm:text-base text-gray-600">{t("dashboard_subtitle")}</p>
           </div>
 
           <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {dashboardStatCards.map((stat) => (
               <div
-                key={stat.label}
+                key={stat.labelKey}
                 className="rounded-xl border border-gray-100 bg-white p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-xs sm:text-sm font-medium text-gray-600">
-                      {stat.label}
+                      {t(stat.labelKey)}
                     </p>
                     <p className="mt-2 text-2xl sm:text-3xl font-bold text-[#c9a84c]">
                       {statsLoading ? (
@@ -263,19 +263,19 @@ export default function DashboardPage() {
           </div>
 
           <div className="mt-8 rounded-xl border border-gray-100 bg-white p-4 sm:p-6 shadow-md">
-            <h3 className="text-lg font-bold text-[#1a2b4a]">Quick Actions</h3>
+            <h3 className="text-lg font-bold text-[#1a2b4a]">{t("quick_actions_title")}</h3>
             <div className="mt-4 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
-              <Link href="/admin/properties" className="rounded-lg border border-[#c9a84c]/30 bg-[#c9a84c]/5 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-[#c9a84c]/10">
-                Manage Properties
+              <Link href={`/${locale}/admin/properties`} className="rounded-lg border border-[#c9a84c]/30 bg-[#c9a84c]/5 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-[#c9a84c]/10">
+                {t("manage_properties")}
               </Link>
-              <Link href="/admin/messages" className="rounded-lg border border-[#c9a84c]/30 bg-[#c9a84c]/5 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-[#c9a84c]/10">
-                View Messages
+              <Link href={`/${locale}/admin/messages`} className="rounded-lg border border-[#c9a84c]/30 bg-[#c9a84c]/5 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-[#c9a84c]/10">
+                {t("view_messages")}
               </Link>
-              <Link href="/admin/evaluations" className="rounded-lg border border-[#c9a84c]/30 bg-[#c9a84c]/5 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-[#c9a84c]/10">
-                Review Evaluations
+              <Link href={`/${locale}/admin/evaluations`} className="rounded-lg border border-[#c9a84c]/30 bg-[#c9a84c]/5 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-[#c9a84c]/10">
+                {t("review_evaluations")}
               </Link>
-              <Link href="/" className="rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-gray-100">
-                Back to Site
+              <Link href={`/${locale}`} className="rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-gray-100">
+                {t("back_to_site")}
               </Link>
             </div>
           </div>

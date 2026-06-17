@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useTranslations, useLocale } from "next-intl";
+
+export const dynamic = "force-dynamic";
 
 const isVideoUrl = (url: string): boolean => {
   return /\.(mp4|webm|mov|avi|quicktime)(\?|$)/i.test(url)
@@ -27,11 +30,12 @@ interface Property {
 const ITEMS_PER_PAGE = 6;
 
 export default function PropertiesPage() {
+  const t = useTranslations("properties");
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#1a2b4a] flex items-center justify-center text-white p-8">
         <div className="text-center">
-          <p className="text-xl font-semibold">Loading properties...</p>
+          <p className="text-xl font-semibold">{t("loading")}</p>
         </div>
       </div>
     }>
@@ -42,6 +46,9 @@ export default function PropertiesPage() {
 
 function PropertiesContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("properties");
 
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -143,10 +150,10 @@ function PropertiesContent() {
       <section className="bg-[#1a2b4a] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl text-center">
           <h1 className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-            Our Properties
+            {t("our_properties")}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-300">
-            Browse our exclusive collection of luxury properties across Morocco
+            {t("browse_collection")}
           </p>
         </div>
       </section>
@@ -158,7 +165,7 @@ function PropertiesContent() {
             <div className="block lg:hidden rounded-xl border border-gray-100 bg-white p-4 shadow-lg">
               <details className="group">
                 <summary className="flex cursor-pointer items-center justify-between list-none text-lg font-semibold text-[#1a2b4a]">
-                  <span>Filters</span>
+                  <span>{t("filters")}</span>
                   <span className="text-gray-400 transition-transform group-open:rotate-180">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -170,55 +177,55 @@ function PropertiesContent() {
                   <div className="grid grid-cols-1 gap-y-3.5 sm:grid-cols-2 gap-x-4">
                     {/* Filter Fields Area */}
                     <div>
-                      <label htmlFor="type-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">Type</label>
+                      <label htmlFor="type-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("type_label")}</label>
                       <select id="type-mobile" value={type} onChange={(e) => setType(e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a2b4a] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30">
-                        <option value="">All types</option>
-                        <option value="apartment">Apartment</option>
-                        <option value="villa">Villa</option>
-                        <option value="land">Land</option>
-                        <option value="commercial">Commercial</option>
+                        <option value="">{t("all_types")}</option>
+                        <option value="apartment">{t("apartment")}</option>
+                        <option value="villa">{t("villa")}</option>
+                        <option value="land">{t("land")}</option>
+                        <option value="commercial">{t("commercial")}</option>
                       </select>
                     </div>
 
                     <div>
-                      <label htmlFor="city-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">City</label>
-                      <input id="city-mobile" type="text" placeholder="Casablanca, Marrakech..." value={city} onChange={(e) => setCity(e.target.value)} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-[#1a2b4a] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30" />
+                      <label htmlFor="city-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("city_label")}</label>
+                      <input id="city-mobile" type="text" placeholder={t("city_placeholder")} value={city} onChange={(e) => setCity(e.target.value)} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-[#1a2b4a] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30" />
                     </div>
 
                     <div>
-                      <label htmlFor="status-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">Status</label>
+                      <label htmlFor="status-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("status_label")}</label>
                       <select id="status-mobile" value={status} onChange={(e) => setStatus(e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a2b4a] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30">
-                        <option value="">Sale or Rent</option>
-                        <option value="sale">Sale</option>
-                        <option value="rent">Rent</option>
+                        <option value="">{t("sale_or_rent")}</option>
+                        <option value="sale">{t("sale")}</option>
+                        <option value="rent">{t("rent")}</option>
                       </select>
                     </div>
 
                     <div>
-                      <label htmlFor="priceRange-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">Price Range</label>
+                      <label htmlFor="priceRange-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("price_range")}</label>
                       <select id="priceRange-mobile" value={priceRange} onChange={(e) => setPriceRange(e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a2b4a] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30">
-                        <option value="">Any price</option>
-                        <option value="0-500000">Up to 500,000 MAD</option>
-                        <option value="500000-2000000">500,000 – 2M MAD</option>
-                        <option value="2000000-5000000">2M – 5,000,000 MAD</option>
-                        <option value="5000000+">5,000,000+ MAD</option>
+                        <option value="">{t("any_price")}</option>
+                        <option value="0-500000">{t("price_up_to_500k")}</option>
+                        <option value="500000-2000000">{t("price_500k_2m")}</option>
+                        <option value="2000000-5000000">{t("price_2m_5m")}</option>
+                        <option value="5000000+">{t("price_5m_plus")}</option>
                       </select>
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label htmlFor="surfaceRange-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">Surface Area</label>
+                      <label htmlFor="surfaceRange-mobile" className="mb-1 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("surface_area")}</label>
                       <select id="surfaceRange-mobile" value={surfaceRange} onChange={(e) => setSurfaceRange(e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a2b4a] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30">
-                        <option value="">Any size</option>
-                        <option value="0-50">Up to 50 m²</option>
-                        <option value="50-100">50 – 100 m²</option>
-                        <option value="100-200">100 – 200 m²</option>
-                        <option value="200+">200 m²+</option>
+                        <option value="">{t("any_size")}</option>
+                        <option value="0-50">{t("surface_up_to_50")}</option>
+                        <option value="50-100">{t("surface_50_100")}</option>
+                        <option value="100-200">{t("surface_100_200")}</option>
+                        <option value="200+">{t("surface_200_plus")}</option>
                       </select>
                     </div>
                   </div>
 
                   <button type="submit" className="w-full mt-4 rounded-lg bg-[#c9a84c] px-6 py-2.5 text-sm font-semibold text-[#1a2b4a] hover:bg-[#d4b85e] transition-colors">
-                    Search
+                    {t("search")}
                   </button>
                 </form>
               </details>
@@ -226,58 +233,58 @@ function PropertiesContent() {
 
             {/* 2. PC DESKTOP FILTER (Always Open, hidden on mobile layouts) */}
             <div className="hidden lg:block rounded-xl border border-gray-100 bg-white p-6 shadow-lg">
-              <h2 className="text-lg font-semibold text-[#1a2b4a]">Filters</h2>
+              <h2 className="text-lg font-semibold text-[#1a2b4a]">{t("filters")}</h2>
               
               <form onSubmit={handleSearch} className="mt-5 space-y-4">
                 <div>
-                  <label htmlFor="type-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">Type</label>
+                  <label htmlFor="type-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("type_label")}</label>
                   <select id="type-desktop" value={type} onChange={(e) => setType(e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-[#1a2b4a] focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30">
-                    <option value="">All types</option>
-                    <option value="apartment">Apartment</option>
-                    <option value="villa">Villa</option>
-                    <option value="land">Land</option>
-                    <option value="commercial">Commercial</option>
+                    <option value="">{t("all_types")}</option>
+                    <option value="apartment">{t("apartment")}</option>
+                    <option value="villa">{t("villa")}</option>
+                    <option value="land">{t("land")}</option>
+                    <option value="commercial">{t("commercial")}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="city-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">City</label>
-                  <input id="city-desktop" type="text" placeholder="Casablanca, Marrakech..." value={city} onChange={(e) => setCity(e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm text-[#1a2b4a]/80 placeholder:text-gray-400 focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30" />
+                  <label htmlFor="city-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("city_label")}</label>
+                  <input id="city-desktop" type="text" placeholder={t("city_placeholder")} value={city} onChange={(e) => setCity(e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm text-[#1a2b4a]/80 placeholder:text-gray-400 focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30" />
                 </div>
 
                 <div>
-                  <label htmlFor="status-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">Status</label>
+                  <label htmlFor="status-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("status_label")}</label>
                   <select id="status-desktop" value={status} onChange={(e) => setStatus(e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-[#1a2b4a] focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30">
-                    <option value="">Sale or Rent</option>
-                    <option value="sale">Sale</option>
-                    <option value="rent">Rent</option>
+                    <option value="">{t("sale_or_rent")}</option>
+                    <option value="sale">{t("sale")}</option>
+                    <option value="rent">{t("rent")}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="priceRange-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">Price Range</label>
+                  <label htmlFor="priceRange-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("price_range")}</label>
                   <select id="priceRange-desktop" value={priceRange} onChange={(e) => setPriceRange(e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-[#1a2b4a] focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30">
-                    <option value="">Any price</option>
-                    <option value="0-500000">Up to 500,000 MAD</option>
-                    <option value="500000-2000000">500,000 – 2,000,000 MAD</option>
-                    <option value="2000000-5000000">2,000,000 – 5,000,000 MAD</option>
-                    <option value="5000000+">5,000,000+ MAD</option>
+                    <option value="">{t("any_price")}</option>
+                    <option value="0-500000">{t("price_up_to_500k")}</option>
+                    <option value="500000-2000000">{t("price_500k_2m")}</option>
+                    <option value="2000000-5000000">{t("price_2m_5m")}</option>
+                    <option value="5000000+">{t("price_5m_plus")}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="surfaceRange-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">Surface Area</label>
+                  <label htmlFor="surfaceRange-desktop" className="mb-1.5 block text-xs font-semibold text-[#1a2b4a]/80 uppercase tracking-wider">{t("surface_area")}</label>
                   <select id="surfaceRange-desktop" value={surfaceRange} onChange={(e) => setSurfaceRange(e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-[#1a2b4a] focus:border-[#c9a84c] focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30">
-                    <option value="">Any size</option>
-                    <option value="0-50">Up to 50 m²</option>
-                    <option value="50-100">50 – 100 m²</option>
-                    <option value="100-200">100 – 200 m²</option>
-                    <option value="200+">200 m²+</option>
+                    <option value="">{t("any_size")}</option>
+                    <option value="0-50">{t("surface_up_to_50")}</option>
+                    <option value="50-100">{t("surface_50_100")}</option>
+                    <option value="100-200">{t("surface_100_200")}</option>
+                    <option value="200+">{t("surface_200_plus")}</option>
                   </select>
                 </div>
 
                 <button type="submit" className="w-full rounded-lg bg-[#c9a84c] px-6 py-3 text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e] focus:outline-none focus:ring-2 focus:ring-[#c9a84c] focus:ring-offset-2">
-                  Search
+                  {t("search")}
                 </button>
               </form>
             </div>
@@ -288,15 +295,15 @@ function PropertiesContent() {
               <div className="mb-6 flex items-center justify-between">
                 <p className="text-sm text-gray-500">
                   {totalCount === 0
-                    ? "No properties found"
-                    : `Showing ${Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, totalCount)}–${Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of ${totalCount} properties`}
+                    ? t("no_properties_found")
+                    : `${t("showing_results")} ${Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, totalCount)}–${Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} ${t("of")} ${totalCount} ${t("properties")}`}
                 </p>
                 {(type || city || status || priceRange || surfaceRange) && (
                   <button
                     onClick={handleClearFilters}
                     className="text-sm text-[#c9a84c] hover:underline font-medium"
                   >
-                    Clear all filters
+                    {t("clear_filters")}
                   </button>
                 )}
               </div>
@@ -345,16 +352,16 @@ function PropertiesContent() {
                   </svg>
                 </div>
                 <p className="text-xl font-semibold text-[#1a2b4a]">
-                  No properties found
+                  {t("no_properties_found")}
                 </p>
                 <p className="mt-2 text-gray-500">
-                  Try adjusting your filters or search criteria.
+                  {t("try_adjusting")}
                 </p>
                 <button
                   onClick={handleClearFilters}
                   className="mt-6 rounded-lg bg-[#c9a84c] px-6 py-2.5 text-sm font-semibold text-[#1a2b4a] hover:bg-[#d4b85e] transition-colors"
                 >
-                  Clear Filters
+                  {t("clear_filters_btn")}
                 </button>
               </div>
             )}
@@ -444,13 +451,13 @@ function PropertiesContent() {
                       {property.featured && (
                         <div className="mb-2">
                           <span className="inline-flex items-center gap-1 rounded bg-[#c9a84c]/20 px-2.5 py-0.5 text-xs font-semibold text-[#1a2b4a]">
-                            ⭐ Featured
+                            ⭐ {t("featured")}
                           </span>
                         </div>
                       )}
 
                       <h3 className="text-xl font-semibold text-[#1a2b4a] line-clamp-1">
-                        {property.title ?? "Untitled Property"}
+                        {property.title ?? t("untitled")}
                       </h3>
 
                       <p className="mt-1 text-sm text-gray-400 flex items-center gap-1">
@@ -465,7 +472,7 @@ function PropertiesContent() {
                         <p className="text-lg font-bold text-[#1a2b4a] tracking-tight">
                           {property.price
                             ? `${property.price.toLocaleString()} MAD`
-                            : "Price on request"}
+                            : t("price_on_request")}
                         </p>
                         <p className="text-sm text-gray-400 font-light tracking-wide">
                           {property.surface ? `${property.surface} m²` : "—"}
@@ -473,10 +480,10 @@ function PropertiesContent() {
                       </div>
 
                       <Link
-                        href={`/properties/${property.id}`}
+                        href={`/${locale}/properties/${property.id}`}
                         className="mt-5 block w-full rounded-lg bg-[#c9a84c] py-3 text-center text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e]"
                       >
-                        View Details
+                        {t("view_details")}
                       </Link>
                     </div>
                   </article>
@@ -495,7 +502,7 @@ function PropertiesContent() {
                   disabled={currentPage === 1}
                   className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-[#1a2b4a] transition-colors hover:border-[#c9a84c] hover:text-[#c9a84c] disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Previous
+                  {t("previous")}
                 </button>
 
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(
@@ -525,7 +532,7 @@ function PropertiesContent() {
                   disabled={currentPage === Math.ceil(totalCount / ITEMS_PER_PAGE)}
                   className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-[#1a2b4a] transition-colors hover:border-[#c9a84c] hover:text-[#c9a84c] disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Next
+                  {t("next")}
                 </button>
               </nav>
             )}

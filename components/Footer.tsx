@@ -1,12 +1,16 @@
+'use client'
+
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const quickLinks = [
-  { href: "/", label: "Home" },
-  { href: "/properties", label: "Properties" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-  { href: "/evaluation", label: "Evaluation" },
-];
+  { href: "/", key: "home" },
+  { href: "/properties", key: "properties" },
+  { href: "/about", key: "about" },
+  { href: "/contact", key: "contact" },
+  { href: "/evaluation", key: "evaluation" },
+] as const;
 
 const cities = [
   "Casablanca",
@@ -43,20 +47,21 @@ const socialLinks = [
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const locale = useLocale();
+  const t = useTranslations("footer");
+  const tNav = useTranslations("nav");
 
   return (
     <footer className="mt-auto bg-[#1a2b4a] text-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           <div>
-            <Link href="/" className="inline-block text-2xl font-bold">
+            <Link href={`/${locale}`} className="inline-block text-2xl font-bold">
               <span className="text-white">LaTour</span>
               <span className="text-[#c9a84c]"> Immo</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-gray-300">
-              Your trusted partner for luxury real estate in Morocco. We help
-              you find, buy, rent, and sell exceptional properties across the
-              kingdom.
+              {t("description")}
             </p>
             <div className="mt-6 flex gap-4">
               {socialLinks.map((social) => (
@@ -82,16 +87,16 @@ export default function Footer() {
 
           <div>
             <h3 className="text-lg font-semibold text-[#c9a84c]">
-              Quick Links
+              {t("quick_links")}
             </h3>
             <ul className="mt-4 space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
-                    href={link.href}
+                    href={`/${locale}${link.href === "/" ? "" : link.href}`}
                     className="text-sm text-gray-300 transition-colors hover:text-[#c9a84c]"
                   >
-                    {link.label}
+                    {tNav(link.key)}
                   </Link>
                 </li>
               ))}
@@ -100,7 +105,7 @@ export default function Footer() {
 
           <div>
             <h3 className="text-lg font-semibold text-[#c9a84c]">
-              Contact Info
+              {t("contact_info")}
             </h3>
             <ul className="mt-4 space-y-3 text-sm text-gray-300">
               <li>
@@ -137,7 +142,7 @@ export default function Footer() {
 
           <div>
             <h3 className="text-lg font-semibold text-[#c9a84c]">
-              Cities We Serve
+              {t("cities_we_serve")}
             </h3>
             <ul className="mt-4 grid grid-cols-2 gap-2">
               {cities.map((city) => (
@@ -155,9 +160,15 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <p className="text-center text-sm text-gray-400">
-            &copy; {currentYear} LaTour Immo. All rights reserved.
-          </p>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <p className="text-center text-sm text-gray-400 md:text-left">
+              &copy; {currentYear} LaTour Immo. {t("all_rights_reserved")}.
+            </p>
+            <div className="flex items-center justify-center md:justify-end">
+              <span className="mr-3 text-sm text-gray-400">{t("language")}</span>
+              <LanguageSwitcher />
+            </div>
+          </div>
         </div>
       </div>
     </footer>

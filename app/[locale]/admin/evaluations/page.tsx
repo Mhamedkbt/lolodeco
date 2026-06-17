@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { useTranslations, useLocale } from "next-intl";
 
 import {
   Squares2X2Icon,
@@ -34,10 +35,10 @@ interface Evaluation {
 }
 
 const navItems = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: "dashboard" },
-  { label: "Properties", href: "/admin/properties", icon: "properties" },
-  { label: "Messages", href: "/admin/messages", icon: "messages" },
-  { label: "Evaluations", href: "/admin/evaluations", icon: "evaluations" },
+  { labelKey: "nav_dashboard", href: "/admin/dashboard", icon: "dashboard" },
+  { labelKey: "nav_properties", href: "/admin/properties", icon: "properties" },
+  { labelKey: "nav_messages", href: "/admin/messages", icon: "messages" },
+  { labelKey: "nav_evaluations", href: "/admin/evaluations", icon: "evaluations" },
 ];
 
 function getIcon(iconType: string) {
@@ -65,6 +66,8 @@ function getIcon(iconType: string) {
 
 export default function EvaluationsPage() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("admin");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
@@ -86,13 +89,13 @@ export default function EvaluationsPage() {
       try {
         const { data, error } = await supabase.auth.getSession();
         if (error || !data.session) {
-          router.push("/admin");
+          router.push(`/${locale}/admin`);
           return;
         }
         setIsCheckingAuth(false);
         await fetchEvaluations();
       } catch (_err) {
-        router.push("/admin");
+        router.push(`/${locale}/admin`);
       }
     }
 
@@ -142,7 +145,7 @@ export default function EvaluationsPage() {
     setLogoutLoading(true);
     try {
       await supabase.auth.signOut();
-      router.push("/admin");
+      router.push(`/${locale}/admin`);
     } catch (_err) {
       setLogoutLoading(false);
     }
@@ -225,7 +228,7 @@ export default function EvaluationsPage() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#c9a84c]"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">{t("loading")}</p>
         </div>
       </div>
     );
@@ -243,12 +246,12 @@ export default function EvaluationsPage() {
             {navItems.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={`/${locale}${item.href}`}
                 onClick={closeSidebar}
                 className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-white/10 focus:outline-none focus:bg-white/10"
               >
                 <span className="text-[#c9a84c]">{getIcon(item.icon)}</span>
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
           </nav>
@@ -262,7 +265,7 @@ export default function EvaluationsPage() {
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
               </svg>
-              {logoutLoading ? "Logging out..." : "Logout"}
+              {logoutLoading ? t("logging_out") : t("logout")}
             </button>
           </div>
         </div>
@@ -292,7 +295,7 @@ export default function EvaluationsPage() {
           </button>
 
           <div className="mt-8 mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">Manage Evaluations</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">{t("manage_evaluations_title")}</h2>
             <p className="mt-1 text-sm text-gray-600">{evaluations.length} evaluation{evaluations.length !== 1 ? "s" : ""}</p>
           </div>
 
@@ -309,24 +312,24 @@ export default function EvaluationsPage() {
               onChange={(e) => setStatusFilter(e.target.value as "all" | "pending" | "reviewed" | "contacted")}
               className="px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#c9a84c] focus:border-transparent"
             >
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="reviewed">Reviewed</option>
-              <option value="contacted">Contacted</option>
+              <option value="all">{t("all_statuses")}</option>
+              <option value="pending">{t("pending")}</option>
+              <option value="reviewed">{t("reviewed")}</option>
+              <option value="contacted">{t("contacted")}</option>
             </select>
           </div>
 
           {loading ? (
             <div className="rounded-xl border border-gray-100 bg-white p-8 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#c9a84c]"></div>
-              <p className="mt-3 text-gray-600">Loading evaluations...</p>
+              <p className="mt-3 text-gray-600">{t("loading_evaluations")}</p>
             </div>
           ) : filteredEvaluations.length === 0 ? (
             <div className="rounded-xl border border-gray-100 bg-white p-12 text-center">
               <svg className="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.66V18a2.25 2.25 0 002.25 2.25h10.5m-16.5 0h16.5" />
               </svg>
-              <p className="mt-4 text-lg font-medium text-gray-600">No evaluations found</p>
+              <p className="mt-4 text-lg font-medium text-gray-600">{t("no_evaluations")}</p>
               <p className="mt-1 text-sm text-gray-500">
                 {evaluations.length === 0 ? "No evaluations yet." : "Try adjusting your search or filters."}
               </p>
@@ -410,9 +413,9 @@ export default function EvaluationsPage() {
                         onClick={(e) => e.stopPropagation()}
                         className="px-2 py-1 text-xs rounded-lg border border-gray-300 bg-white text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#c9a84c] focus:border-transparent flex-1 sm:flex-none"
                       >
-                        <option value="pending">Pending</option>
-                        <option value="reviewed">Reviewed</option>
-                        <option value="contacted">Contacted</option>
+                        <option value="pending">{t("pending")}</option>
+                        <option value="reviewed">{t("reviewed")}</option>
+                        <option value="contacted">{t("contacted")}</option>
                       </select>
                       <button
                         onClick={(e) => {
@@ -456,46 +459,46 @@ export default function EvaluationsPage() {
             <div className="p-6 sm:p-8 space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-600 mb-1">Full Name</h4>
+                  <h4 className="text-sm font-semibold text-gray-600 mb-1">{t("full_name")}</h4>
                   <p className="text-gray-900 break-words">{selectedEvaluation.name ?? "Unknown"}</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-600 mb-1">Email</h4>
+                  <h4 className="text-sm font-semibold text-gray-600 mb-1">{t("email")}</h4>
                   <a href={`mailto:${selectedEvaluation.email ?? ""}`} className="text-[#c9a84c] hover:underline break-all">
                     {selectedEvaluation.email ?? "—"}
                   </a>
                 </div>
                 {selectedEvaluation.phone && (
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-600 mb-1">Phone</h4>
+                    <h4 className="text-sm font-semibold text-gray-600 mb-1">{t("phone")}</h4>
                     <a href={`tel:${selectedEvaluation.phone}`} className="text-[#c9a84c] hover:underline">
                       {selectedEvaluation.phone}
                     </a>
                   </div>
                 )}
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-600 mb-1">Status</h4>
+                  <h4 className="text-sm font-semibold text-gray-600 mb-1">{t("status")}</h4>
                   <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(selectedEvaluation.status)}`}>
                     {((selectedEvaluation.status ?? "pending").charAt(0).toUpperCase() + (selectedEvaluation.status ?? "pending").slice(1))}
                   </span>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-600 mb-1">Property Type</h4>
+                  <h4 className="text-sm font-semibold text-gray-600 mb-1">{t("property_type")}</h4>
                   <p className="text-gray-900">{selectedEvaluation.type ?? "—"}</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-600 mb-1">Location</h4>
+                  <h4 className="text-sm font-semibold text-gray-600 mb-1">{t("location")}</h4>
                   <p className="text-gray-900">{selectedEvaluation.location ?? "—"}</p>
                 </div>
                 {selectedEvaluation.surface && (
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-600 mb-1">Surface Area</h4>
+                    <h4 className="text-sm font-semibold text-gray-600 mb-1">{t("surface_area")}</h4>
                     <p className="text-gray-900">{selectedEvaluation.surface} m²</p>
                   </div>
                 )}
                 {selectedEvaluation.desired_price && (
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-600 mb-1">Desired Price</h4>
+                    <h4 className="text-sm font-semibold text-gray-600 mb-1">{t("desired_price")}</h4>
                     <p className="text-gray-900">{selectedEvaluation.desired_price.toLocaleString()} MAD</p>
                   </div>
                 )}
@@ -574,9 +577,9 @@ export default function EvaluationsPage() {
                   }}
                   className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-[#c9a84c] focus:border-transparent"
                 >
-                  <option value="pending">Mark as Pending</option>
-                  <option value="reviewed">Mark as Reviewed</option>
-                  <option value="contacted">Mark as Contacted</option>
+                  <option value="pending">{t("mark_pending")}</option>
+                  <option value="reviewed">{t("mark_reviewed")}</option>
+                  <option value="contacted">{t("mark_contacted")}</option>
                 </select>
                 <button
                   onClick={() => {
@@ -597,8 +600,8 @@ export default function EvaluationsPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-sm bg-white rounded-xl shadow-2xl">
             <div className="p-6 sm:p-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Evaluation</h3>
-              <p className="text-gray-700 mb-6">Are you sure you want to permanently delete this evaluation? This action cannot be undone.</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t("delete_evaluation")}</h3>
+              <p className="text-gray-700 mb-6">{t("delete_evaluation_confirm")}</p>
 
               <div className="flex gap-3 justify-end">
                 <button
@@ -612,7 +615,7 @@ export default function EvaluationsPage() {
                   disabled={isDeleting}
                   className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
-                  {isDeleting ? "Deleting..." : "Delete"}
+                  {isDeleting ? t("deleting") : t("delete")}
                 </button>
               </div>
             </div>

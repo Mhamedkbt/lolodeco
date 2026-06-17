@@ -2,7 +2,10 @@
 
 import { FormEvent, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
-import { TestimonialsSlider } from "../../components/TestimonialsSlider";
+import { TestimonialsSlider } from "@/components/TestimonialsSlider";
+import { useTranslations } from 'next-intl'
+
+export const dynamic = 'force-dynamic'
 
 const isVideoFile = (file: File): boolean => file.type.startsWith('video/')
 
@@ -11,73 +14,65 @@ const inputClassName =
 
 const labelClassName = 'mb-1.5 block text-sm font-medium text-[#1a2b4a]'
 
-const processSteps = [
-  {
-    title: 'Submit Your Request',
-    description:
-      'Fill out the form with your property details and upload photos. It only takes a few minutes.',
-    icon: (
-      <svg
-        className="h-7 w-7"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-        />
-      </svg>
-    ),
-  },
-  {
-    title: 'Expert Analysis',
-    description:
-      'Our certified valuers review market data, location trends, and your property specifics.',
-    icon: (
-      <svg
-        className="h-7 w-7"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 11.25v1.5m3-1.5v1.5m-3-6.75h.008v.008H12V8.25zm3 0h.008v.008H15V8.25z"
-        />
-      </svg>
-    ),
-  },
-  {
-    title: 'Receive Your Evaluation',
-    description:
-      'Get a detailed, no-obligation valuation report delivered directly to your inbox.',
-    icon: (
-      <svg
-        className="h-7 w-7"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M21.75 9v.906a2.25 2.25 0 01-1.183 1.981l-6.478 3.488M2.25 9v.906a2.25 2.25 0 001.183 1.981l6.478 3.488m8.839 2.51l-4.66-2.51m0 0l-1.023-.55a2.25 2.25 0 00-2.134 0l-1.023.55m0 0l-4.66 2.51m16.5 1.615a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V8.844a2.25 2.25 0 011.183-1.981l7.5-4.031a2.25 2.25 0 012.134 0l7.5 4.031a2.25 2.25 0 011.183 1.98V19.5z"
-        />
-      </svg>
-    ),
-  },
+const stepIcons = [
+  (
+    <svg
+      className="h-7 w-7"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+      />
+    </svg>
+  ),
+  (
+    <svg
+      className="h-7 w-7"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 11.25v1.5m3-1.5v1.5m-3-6.75h.008v.008H12V8.25zm3 0h.008v.008H15V8.25z"
+      />
+    </svg>
+  ),
+  (
+    <svg
+      className="h-7 w-7"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M21.75 9v.906a2.25 2.25 0 01-1.183 1.981l-6.478 3.488M2.25 9v.906a2.25 2.25 0 001.183 1.981l6.478 3.488m8.839 2.51l-4.66-2.51m0 0l-1.023-.55a2.25 2.25 0 00-2.134 0l-1.023.55m0 0l-4.66 2.51m16.5 1.615a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V8.844a2.25 2.25 0 011.183-1.981l7.5-4.031a2.25 2.25 0 012.134 0l7.5 4.031a2.25 2.25 0 011.183 1.98V19.5z"
+      />
+    </svg>
+  ),
 ]
 
+const stepKeys = [
+  { title: 'step1_title', description: 'step1_desc' },
+  { title: 'step2_title', description: 'step2_desc' },
+  { title: 'step3_title', description: 'step3_desc' },
+] as const
+
 export default function EvaluationPage() {
+  const t = useTranslations("evaluation");
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formSent, setFormSent] = useState(false)
@@ -126,7 +121,7 @@ export default function EvaluationPage() {
     let photoUrls: string[] = []
 
     if (selectedFiles.length > 0) {
-      setUploadProgress(`Uploading ${selectedFiles.length} photo(s)...`)
+      setUploadProgress(t('upload_progress', { count: selectedFiles.length }))
 
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i]
@@ -142,9 +137,7 @@ export default function EvaluationPage() {
 
         if (uploadError) {
           console.error('Upload error:', uploadError)
-          setFormError(
-            'Failed to upload photos. Please check your connection and try again.'
-          )
+          setFormError(t('upload_error'))
           setFormSending(false)
           setUploadProgress('')
           return
@@ -158,11 +151,11 @@ export default function EvaluationPage() {
           photoUrls.push(urlData.publicUrl)
         }
 
-        setUploadProgress(`Uploaded ${i + 1} / ${selectedFiles.length} photo(s)...`)
+        setUploadProgress(t('uploaded_progress', { current: i + 1, total: selectedFiles.length }))
       }
     }
 
-    setUploadProgress('Saving your request...')
+    setUploadProgress(t('saving_request'))
 
     const { error: insertError } = await supabase
       .from('evaluations')
@@ -181,7 +174,7 @@ export default function EvaluationPage() {
 
     if (insertError) {
       console.error('Insert error:', insertError)
-      setFormError('Failed to submit your request. Please try again.')
+      setFormError(t('submit_error'))
       setFormSending(false)
       setUploadProgress('')
       return
@@ -207,12 +200,10 @@ export default function EvaluationPage() {
       <section className="bg-[#1a2b4a] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-            Request a Free Property Evaluation
+            {t('request_evaluation')}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-300">
-            Discover the true market value of your property with a professional
-            evaluation from our expert team — completely free and with no
-            obligation.
+            {t('discover_value')}
           </p>
         </div>
       </section>
@@ -238,17 +229,16 @@ export default function EvaluationPage() {
                 </svg>
               </div>
               <p className="mt-4 text-xl font-semibold text-green-800">
-                Request submitted successfully!
+                {t('request_submitted')}
               </p>
               <p className="mt-2 text-gray-600">
-                Thank you for your trust. Our team will analyze your property
-                and send your evaluation report within 48 hours.
+                {t('thank_you_evaluation')}
               </p>
               <button
                 onClick={() => setFormSent(false)}
                 className="mt-6 rounded-lg border border-green-300 px-6 py-2.5 text-sm font-medium text-green-700 hover:bg-green-100 transition-colors"
               >
-                Submit Another Request
+                {t('submit_another')}
               </button>
             </div>
           ) : (
@@ -259,13 +249,13 @@ export default function EvaluationPage() {
               <div className="space-y-5">
                 <div>
                   <label htmlFor="fullName" className={labelClassName}>
-                    Full Name
+                    {t('full_name')}
                   </label>
                   <input
                     id="fullName"
                     type="text"
                     required
-                    placeholder="Your full name"
+                    placeholder={t('name_placeholder')}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     className={inputClassName}
@@ -275,13 +265,13 @@ export default function EvaluationPage() {
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label htmlFor="phone" className={labelClassName}>
-                      Phone
+                      {t('phone')}
                     </label>
                     <input
                       id="phone"
                       type="tel"
                       required
-                      placeholder="06 XX XX XX XX"
+                      placeholder={t('phone_placeholder')}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className={inputClassName}
@@ -289,13 +279,13 @@ export default function EvaluationPage() {
                   </div>
                   <div>
                     <label htmlFor="email" className={labelClassName}>
-                      Email
+                      {t('email')}
                     </label>
                     <input
                       id="email"
                       type="email"
                       required
-                      placeholder="you@example.com"
+                      placeholder={t('email_placeholder')}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className={inputClassName}
@@ -306,7 +296,7 @@ export default function EvaluationPage() {
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label htmlFor="propertyType" className={labelClassName}>
-                      Property Type
+                      {t('property_type')}
                     </label>
                     <select
                       id="propertyType"
@@ -315,22 +305,22 @@ export default function EvaluationPage() {
                       onChange={(e) => setPropertyType(e.target.value)}
                       className={inputClassName}
                     >
-                      <option value="">Select type</option>
-                      <option value="apartment">Apartment</option>
-                      <option value="villa">Villa</option>
-                      <option value="land">Land</option>
-                      <option value="commercial">Commercial</option>
+                      <option value="">{t('select_type')}</option>
+                      <option value="apartment">{t('apartment')}</option>
+                      <option value="villa">{t('villa')}</option>
+                      <option value="land">{t('land')}</option>
+                      <option value="commercial">{t('commercial')}</option>
                     </select>
                   </div>
                   <div>
                     <label htmlFor="city" className={labelClassName}>
-                      City / Location
+                      {t('city_location')}
                     </label>
                     <input
                       id="city"
                       type="text"
                       required
-                      placeholder="e.g. Casablanca, Agadir"
+                      placeholder={t('city_placeholder')}
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       className={inputClassName}
@@ -341,14 +331,14 @@ export default function EvaluationPage() {
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label htmlFor="surface" className={labelClassName}>
-                      Surface in m²
+                      {t('surface')}
                     </label>
                     <input
                       id="surface"
                       type="number"
                       required
                       min={1}
-                      placeholder="120"
+                      placeholder={t('surface_placeholder')}
                       value={surface}
                       onChange={(e) => setSurface(e.target.value)}
                       className={inputClassName}
@@ -356,13 +346,13 @@ export default function EvaluationPage() {
                   </div>
                   <div>
                     <label htmlFor="desiredPrice" className={labelClassName}>
-                      Desired Price in MAD
+                      {t('desired_price')}
                     </label>
                     <input
                       id="desiredPrice"
                       type="number"
                       min={0}
-                      placeholder="1 500 000"
+                      placeholder={t('price_placeholder')}
                       value={desiredPrice}
                       onChange={(e) => setDesiredPrice(e.target.value)}
                       className={inputClassName}
@@ -372,12 +362,12 @@ export default function EvaluationPage() {
 
                 <div>
                   <label htmlFor="notes" className={labelClassName}>
-                    Additional Notes
+                    {t('additional_notes')}
                   </label>
                   <textarea
                     id="notes"
                     rows={4}
-                    placeholder="Tell us about the property condition, amenities, or any other relevant details..."
+                    placeholder={t('notes_placeholder')}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     className={`${inputClassName} resize-none`}
@@ -386,7 +376,7 @@ export default function EvaluationPage() {
 
                 <div>
   <label className={labelClassName}>
-    Upload Photos & Videos
+    {t('upload_photos')}
   </label>
 
   <div
@@ -410,10 +400,10 @@ export default function EvaluationPage() {
       />
     </svg>
     <p className="text-sm font-medium text-[#1a2b4a]">
-      Click to upload photos & videos
+      {t('upload_click')}
     </p>
     <p className="text-xs text-gray-500 mt-1">
-      📷 JPG, PNG, WebP  ·  🎬 MP4, MOV, WebM — Max 50 MB each.
+      {t('upload_hint')}
     </p>
     <input
       ref={fileInputRef}
@@ -456,7 +446,7 @@ export default function EvaluationPage() {
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 text-center
                                   bg-black/60 text-white text-[10px] py-0.5 font-medium">
-                    VIDEO
+                    {t('video')}
                   </div>
                 </div>
               ) : (
@@ -486,7 +476,7 @@ export default function EvaluationPage() {
               className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-600 text-white 
                          rounded-full w-5 h-5 flex items-center justify-center shadow-md 
                          transition-colors z-20"
-              title="Remove this file"
+              title={t('remove_file')}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -528,7 +518,7 @@ export default function EvaluationPage() {
               d="M12 4v16m8-8H4"
             />
           </svg>
-          <span className="text-xs text-gray-400">Add more</span>
+          <span className="text-xs text-gray-400">{t('add_more')}</span>
         </button>
       </div>
 
@@ -538,9 +528,11 @@ export default function EvaluationPage() {
             const videoCount = selectedFiles.filter(f => f.type.startsWith('video/')).length
             const imageCount = selectedFiles.length - videoCount
             const parts = []
-            if (imageCount > 0) parts.push(`${imageCount} photo${imageCount > 1 ? 's' : ''}`)
-            if (videoCount > 0) parts.push(`${videoCount} video${videoCount > 1 ? 's' : ''}`)
-            return parts.join(' + ') + ' selected'
+            if (imageCount > 0) parts.push(t('photos_only', { count: imageCount }))
+            if (videoCount > 0) parts.push(t('videos_only', { count: videoCount }))
+            return parts.length === 2
+              ? t('photos_selected', { images: parts[0], videos: parts[1] })
+              : parts.join(' + ')
           })()}
         </p>
         <button
@@ -552,7 +544,7 @@ export default function EvaluationPage() {
           className="text-xs text-red-500 hover:text-red-700 
                      font-medium transition-colors"
         >
-          Remove all
+          {t('remove_all')}
         </button>
       </div>
     </div>
@@ -592,10 +584,10 @@ export default function EvaluationPage() {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                         />
                       </svg>
-                      {uploadProgress || 'Submitting...'}
+                      {uploadProgress || t('submitting')}
                     </span>
                   ) : (
-                    'Submit Evaluation Request'
+                    t('submit_evaluation')
                   )}
                 </button>
               </div>
@@ -604,27 +596,27 @@ export default function EvaluationPage() {
 
           <div className="mt-16">
             <h2 className="text-center text-2xl font-bold text-[#1a2b4a] sm:text-3xl">
-              How It Works
+              {t('how_it_works')}
             </h2>
             <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-[#c9a84c]" />
 
             <div className="mt-10 grid gap-6 sm:grid-cols-3">
-              {processSteps.map((step, index) => (
+              {stepKeys.map((step, index) => (
                 <div
                   key={step.title}
                   className="rounded-xl border border-gray-100 bg-white p-6 text-center shadow-md"
                 >
                   <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#1a2b4a] text-[#c9a84c]">
-                    {step.icon}
+                    {stepIcons[index]}
                   </div>
                   <span className="mt-4 inline-block rounded-full bg-[#c9a84c]/15 px-3 py-0.5 text-xs font-semibold text-[#c9a84c]">
-                    Step {index + 1}
+                    {t('step')} {index + 1}
                   </span>
                   <h3 className="mt-3 text-lg font-bold text-[#1a2b4a]">
-                    {step.title}
+                    {t(step.title)}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                    {step.description}
+                    {t(step.description)}
                   </p>
                 </div>
               ))}

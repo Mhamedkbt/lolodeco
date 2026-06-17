@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
-// 1. Your data stays right here inside the same file!
 export interface Testimonial {
   id: number;
   name: string;
@@ -11,48 +11,49 @@ export interface Testimonial {
   rating: number;
 }
 
-const testimonialsData: Testimonial[] = [
-  {
-    id: 1,
-    name: "Yassine El Amrani",
-    role: "Villa Owner, Marrakech",
-    text: "Service exceptionnel ! L'équipe de LaTour Immo m'a accompagné de A à Z pour la vente de ma villa. Très professionnels et réactifs.",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Sarah K.",
-    role: "Apartment Tenant, Kénitra",
-    text: "Grâce à LaTour Immo, j'ai trouvé un magnifique appartement moderne à Kénitra en moins d'une semaine. Processus transparent et fluide.",
-    rating: 5,
-  },
-  {
-    id: 3,
-    name: "Mohamed El Fassi",
-    role: "Commercial Investor",
-    text: "Une agence de confiance avec une excellente connaissance du marché marocain. Je recommande vivement pour tout investissement premium.",
-    rating: 5,
-  },
-];
-
 export function TestimonialsSlider() {
-    const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const t = useTranslations("testimonials");
+  const [currentSlide, setCurrentSlide] = useState<number>(0);
+
+  const testimonialsData: Testimonial[] = [
+    {
+      id: 1,
+      name: t("t1_name"),
+      role: t("t1_role"),
+      text: t("t1_text"),
+      rating: 5,
+    },
+    {
+      id: 2,
+      name: t("t2_name"),
+      role: t("t2_role"),
+      text: t("t2_text"),
+      rating: 5,
+    },
+    {
+      id: 3,
+      name: t("t3_name"),
+      role: t("t3_role"),
+      text: t("t3_text"),
+      rating: 5,
+    },
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % testimonialsData.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [testimonialsData.length]);
 
   return (
     <section className="bg-gray-50 px-4 py-17 sm:px-6 lg:px-8 overflow-hidden border-t border-gray-100 w-full">
       <div className="mx-auto max-w-4xl text-center">
         <span className="text-xs font-bold uppercase tracking-widest text-[#c9a84c]">
-          Témoignages
+          {t("label")}
         </span>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1a2b4a] sm:text-4xl">
-          Ce que disent nos clients
+          {t("title")}
         </h2>
 
         <div className="relative mt-12 min-h-[220px] flex items-center justify-center">
@@ -65,7 +66,6 @@ export function TestimonialsSlider() {
                   : "opacity-0 translate-x-8 pointer-events-none"
               }`}
             >
-              {/* Gold Stars */}
               <div className="flex gap-1 mb-6">
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-[#c9a84c]" fill="currentColor" viewBox="0 0 20 20">
@@ -74,12 +74,10 @@ export function TestimonialsSlider() {
                 ))}
               </div>
 
-              {/* Testimonial Quote */}
               <p className="text-xl sm:text-2xl text-[#1a2b4a] font-light max-w-2xl leading-relaxed italic">
                 &ldquo;{testimonial.text}&rdquo;
               </p>
 
-              {/* Reviewer Details */}
               <h4 className="mt-6 text-base font-bold text-[#1a2b4a] tracking-wide">
                 {testimonial.name}
               </h4>
@@ -90,7 +88,6 @@ export function TestimonialsSlider() {
           ))}
         </div>
 
-        {/* Slider Indicators Navigation Dots */}
         <div className="mt-8 flex justify-center gap-2.5">
           {testimonialsData.map((_, idx) => (
             <button

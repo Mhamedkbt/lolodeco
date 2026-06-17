@@ -3,17 +3,21 @@
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/properties", label: "Properties" },
-  { href: "/about", label: "About" },
-  { href: "/evaluation", label: "Evaluation" },
-  { href: "/contact", label: "Contact" },
-];
+import { useTranslations, useLocale } from "next-intl";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const t = useTranslations("nav");
+  const locale = useLocale();
+
+  const navLinks = [
+    { href: `/${locale}`, label: t("home") },
+    { href: `/${locale}/properties`, label: t("properties") },
+    { href: `/${locale}/about`, label: t("about") },
+    { href: `/${locale}/evaluation`, label: t("evaluation") },
+    { href: `/${locale}/contact`, label: t("contact") },
+  ];
 
   return (
     <header className="sticky top-0 z-50 bg-[#1a2b4a] shadow-md">
@@ -21,7 +25,7 @@ export default function Navbar() {
         
         {/* Logo Link Wrapper */}
         <Link
-          href="/"
+          href={`/${locale}`}
           className="flex items-center"
           onClick={() => setMenuOpen(false)}
         >
@@ -52,10 +56,10 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Desktop Action Box (Person Icon to the left of Phone Button) */}
-        <div className="hidden items-center gap-5 md:flex">
+        {/* Desktop Action Box (Language Switcher and Phone Button) */}
+        <div className="hidden items-center gap-3 md:flex">
           <Link 
-            href="/admin" 
+            href={`/${locale}/admin`}
             className="text-white transition-colors hover:text-[#c9a84c]"
             aria-label="Admin Login"
           >
@@ -70,6 +74,8 @@ export default function Navbar() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
           </Link>
+
+          <LanguageSwitcher />
           
           <a
             href="tel:0661141811"
@@ -82,7 +88,7 @@ export default function Navbar() {
         {/* Mobile Controls (Person Icon on the left of Menu Icon) */}
         <div className="flex items-center gap-3 md:hidden">
           <Link 
-            href="/admin" 
+            href={`/${locale}/admin`}
             className="p-2 text-white transition-colors hover:text-[#c9a84c]"
             aria-label="Admin Login"
             onClick={() => setMenuOpen(false)}
@@ -155,6 +161,9 @@ export default function Navbar() {
               >
                 0661141811
               </a>
+            </li>
+            <li className="pt-4 mt-4 border-t border-white/10">
+              <LanguageSwitcher />
             </li>
           </ul>
         </div>
