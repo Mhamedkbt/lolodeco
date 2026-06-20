@@ -651,7 +651,7 @@ export default function AdminProductsPage() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-<div className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-2xl">            <div className="sticky top-0 border-b border-gray-200 bg-white p-6 sm:p-8">
+<div className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-2xl">            <div className="sticky top-0 border-b border-gray-200 bg-white p-6 sm:p-8">
               <button type="button" onClick={cleanupAndClose} className="absolute right-4 top-4 p-1 text-gray-400 transition-colors hover:text-gray-600">
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
