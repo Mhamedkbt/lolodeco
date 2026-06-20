@@ -217,7 +217,7 @@ export default function MessagesPage() {
         }`}
       >
         <div className="flex flex-col h-full">
-          <nav className="flex-1 px-4 pt-6 space-y-2">
+          <nav className="flex-1 px-4 pt-10 md:pt-6 space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.href}

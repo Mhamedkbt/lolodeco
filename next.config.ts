@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
+import path from "path";
+import { fileURLToPath } from "url";
 import createNextIntlPlugin from 'next-intl/plugin'
 
 const withNextIntl = createNextIntlPlugin('./i18n.ts')
+const projectRoot = path.dirname(fileURLToPath(import.meta.url))
 
 function getSupabaseHostname(): string | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -17,6 +20,9 @@ function getSupabaseHostname(): string | null {
 const supabaseHostname = getSupabaseHostname()
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: projectRoot,
+  },
   async redirects() {
     return [
       {

@@ -432,7 +432,7 @@ export default function AdminProductsPage() {
         }`}
       >
         <div className="flex h-full flex-col">
-          <nav className="flex-1 space-y-2 px-4 pt-6">
+          <nav className="flex-1 space-y-2 px-4 pt-10 md:pt-6">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -553,7 +553,7 @@ export default function AdminProductsPage() {
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("image")}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("title")}</th>
+                    <th className="min-w-[160px] px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("title")}</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("category")}</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("price")}</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("stock")}</th>
@@ -579,7 +579,7 @@ export default function AdminProductsPage() {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-sm font-medium text-[#404040]">
+                      <td className="min-w-[160px] px-4 py-3 text-sm font-medium text-[#404040] whitespace-normal wrap-break-word align-top">
                         {product.title}
                         {product.is_promotion && (
                           <span className="ml-2 rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-green-700">{t("promo_badge")}</span>
@@ -834,4 +834,3 @@ export default function AdminProductsPage() {
   );
 }
 
-// PROMO
