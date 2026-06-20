@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/fr',
+        permanent: false,
+      },
+    ]
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
