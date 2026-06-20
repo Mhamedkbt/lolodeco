@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { categories, getCategoryFilterValues, getCategoryLabel } from "@/lib/categories";
+import { getUnitLabel } from "@/lib/units";
 import { useTranslations, useLocale } from "next-intl";
 
 export const dynamic = "force-dynamic";
@@ -300,7 +301,7 @@ function ProductsContent() {
                           {shown != null ? (
                             <>
                               <span className="text-xl font-bold text-[#404040]">{shown.toLocaleString()} MAD</span>
-                              <span className="text-xs text-gray-400">/ {product.price_unit ?? "pièce"}</span>
+                              <span className="text-xs text-gray-400">/ {getUnitLabel(product.price_unit, locale)}</span>
                               {hasPromo && product.price != null && (
                                 <span className="ml-1 text-sm text-gray-400 line-through">{product.price.toLocaleString()}</span>
                               )}
@@ -373,4 +374,4 @@ function ProductsContent() {
   );
 }
 
-// PROMO
+// 

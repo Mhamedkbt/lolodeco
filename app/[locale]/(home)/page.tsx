@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { getCategoryLabel } from "@/lib/categories";
+import { getUnitLabel } from "@/lib/units";
 import { TestimonialsSlider } from "@/components/TestimonialsSlider";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -29,9 +30,9 @@ interface Product {
 }
 
 const statsData = [
-  { target: 500, suffix: "+", label: "Produits" },
-  { target: 5, suffix: "+", label: "Ans Experience" },
-  { target: 1000, suffix: "+", label: "Clients Satisfaits" },
+  { target: 100, suffix: "+", label: "Produits" },
+  { target: 3, suffix: "+", label: "Ans Experience" },
+  { target: 100, suffix: "+", label: "Clients Satisfaits" },
   { target: 1, suffix: "", label: "Magasin Agadir" },
 ];
 
@@ -152,7 +153,8 @@ export default function Home() {
       )}
 
       {/* HERO */}
-      <section className="relative flex min-h-[88vh] items-center justify-center overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
+      <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden px-4 py-24 sm:px-6 lg:px-8">
+        {/* Background Visual Stack */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
             src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1920&q=80"
@@ -160,48 +162,89 @@ export default function Home() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center scale-110 animate-[aliveBackground_30s_linear_infinite]"
+            className="object-cover object-center scale-110 animate-[aliveBackground_35s_ease-in-out_infinite]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/55 to-black/65" />
+          {/* Multi-layered Premium Dark Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/60 to-[#404040]/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+          
+          {/* Subtle Fine Design Grid Overlay */}
+          <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+          
+          {/* Dynamic Lighting Ambient Aura */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#EFBA1C]/10 rounded-full blur-[120px] animate-pulse pointer-events-none duration-[8000ms]" />
         </div>
 
+        {/* Dynamic Global Animations Rules */}
         <style jsx global>{`
           @keyframes aliveBackground {
-            0% { transform: scale(1.1) translate(0px, 0px); }
-            50% { transform: scale(1.18) translate(-12px, -10px); }
-            100% { transform: scale(1.1) translate(0px, 0px); }
+            0% { transform: scale(1.08) translate(0px, 0px) rotate(0deg); }
+            50% { transform: scale(1.15) translate(-8px, -6px) rotate(0.5deg); }
+            100% { transform: scale(1.08) translate(0px, 0px) rotate(0deg); }
           }
-          @keyframes contentEntrance {
-            from { opacity: 0; transform: translateY(15px); }
+          @keyframes slideUpEntrance {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
+          }
+          .animate-fade-in-up {
+            animation: slideUpEntrance 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
           }
         `}</style>
 
-        <div className="relative z-10 mx-auto w-full max-w-4xl text-center animate-[contentEntrance_1s_ease-out_forwards]">
-          <span className="inline-block rounded-full border border-[#EFBA1C]/60 bg-[#EFBA1C]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#EFBA1C] backdrop-blur-sm">
-            Agadir · Maroc
-          </span>
-          <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white drop-shadow-md sm:text-5xl lg:text-6xl">
+        {/* Content Box */}
+        <div className="relative z-10 mx-auto w-full max-w-4xl text-center">
+          {/* Location Badge */}
+          <div className="opacity-0 animate-fade-in-up [animation-delay:200ms]">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#EFBA1C]/40 bg-black/40 backdrop-blur-md px-4 py-2 text-xs font-bold uppercase tracking-widest text-[#EFBA1C] shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-transform hover:scale-105">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#EFBA1C] animate-ping" />
+              {t("location_badge")}
+            </span>
+          </div>
+
+          {/* Core Headline */}
+          <h1 className="opacity-0 animate-fade-in-up [animation-delay:450ms] mt-8 text-4xl font-extrabold leading-[1.15] tracking-tight text-white drop-shadow-xl sm:text-5xl lg:text-6xl px-2">
             {t("hero_title")}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg font-light text-gray-200 drop-shadow-sm sm:text-xl">
+
+          {/* Subtitle / Pitch */}
+          <p className="opacity-0 animate-fade-in-up [animation-delay:700ms] mx-auto mt-6 max-w-2xl text-base font-light leading-relaxed text-gray-200/95 drop-shadow-sm sm:text-lg lg:text-xl">
             {t("hero_subtitle")}
           </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+
+          {/* CTAs with Dynamic Micro-interactions */}
+          <div className="opacity-0 animate-fade-in-up [animation-delay:950ms] mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row px-4">
             <Link
               href={`/${locale}/products`}
-              className="w-full rounded-xl bg-[#EFBA1C] px-8 py-4 text-base font-bold text-[#404040] shadow-lg transition-all hover:bg-[#F0C040] hover:shadow-xl active:scale-[0.98] sm:w-auto"
+              className="group relative w-full overflow-hidden rounded-xl bg-[#EFBA1C] px-8 py-4 text-base font-bold text-[#404040] shadow-lg shadow-[#EFBA1C]/20 transition-all duration-300 hover:bg-[#F0C040] hover:shadow-xl hover:shadow-[#EFBA1C]/30 active:scale-[0.98] sm:w-auto"
             >
-              {t("view_all")}
+              <span className="relative z-10">{t("view_all")}</span>
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
             </Link>
             <Link
               href={`/${locale}/contact`}
-              className="w-full rounded-xl border-2 border-white/80 px-8 py-4 text-base font-bold text-white backdrop-blur-sm transition-all hover:bg-white hover:text-[#404040] sm:w-auto"
+              className="w-full rounded-xl border-2 border-white/60 bg-white/5 px-8 py-4 text-base font-bold text-white backdrop-blur-md shadow-lg transition-all duration-300 hover:border-[#EFBA1C] hover:bg-white hover:text-[#404040] hover:shadow-white/5 active:scale-[0.98] sm:w-auto"
             >
               {t("contact_us")}
             </Link>
           </div>
         </div>
+
+        {/* Elegant Modern Scroll Down Prompt */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/50 opacity-0 animate-fade-in-up [animation-delay:1400ms]">
+          <span className="text-[10px] uppercase tracking-[0.25em] font-semibold text-gray-400">Scroll</span>
+          <div className="flex h-9 w-5 items-start justify-center rounded-full border-2 border-white/30 p-1">
+            <div className="h-1.5 w-1 rounded-full bg-[#EFBA1C] animate-[scrollIndicator_2s_ease-in-out_infinite]" />
+          </div>
+        </div>
+
+        {/* Scroll Animation Keyframes style */}
+        <style jsx>{`
+          @keyframes scrollIndicator {
+            0% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(10px); opacity: 0.3; }
+            100% { transform: translateY(0); opacity: 1; }
+          }
+        `}</style>
       </section>
 
       {/* FEATURED PRODUCTS */}
@@ -267,7 +310,7 @@ export default function Home() {
                         {shown != null ? (
                           <>
                             <span className="text-xl font-bold text-[#404040]">{shown.toLocaleString()} MAD</span>
-                            <span className="text-xs text-gray-400">/ {product.price_unit ?? "pièce"}</span>
+                            <span className="text-xs text-gray-400">/ {getUnitLabel(product.price_unit, locale)}</span>
                             {hasPromo && product.price != null && (
                               <span className="ml-1 text-sm text-gray-400 line-through">{product.price.toLocaleString()}</span>
                             )}
@@ -349,6 +392,3 @@ export default function Home() {
     </>
   );
 }
-
-
-// PROMO

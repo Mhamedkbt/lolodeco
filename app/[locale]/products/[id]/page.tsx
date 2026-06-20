@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 import { FormEvent, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { getCategoryFilterValues, getCategoryLabel } from '@/lib/categories'
+import { getUnitLabel } from '@/lib/units'
 import { useTranslations, useLocale } from 'next-intl'
 
 export const dynamic = 'force-dynamic'
@@ -210,7 +211,7 @@ export default function ProductPage() {
         {priceShown != null ? (
           <>
             <p className="text-3xl font-bold text-[#EFBA1C] sm:text-4xl">{priceShown.toLocaleString()} MAD</p>
-            <span className="mb-1 text-sm text-gray-400">/ {product.price_unit ?? 'pièce'}</span>
+            <span className="mb-1 text-sm text-gray-400">/ {getUnitLabel(product.price_unit, locale)}</span>
             {hasPromo && product.price != null && (
               <span className="mb-1 ml-1 text-lg text-gray-400 line-through">{product.price.toLocaleString()}</span>
             )}

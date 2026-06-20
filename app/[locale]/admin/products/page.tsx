@@ -10,6 +10,7 @@ import {
   getCategoryLabel,
   normalizeCategoryId,
 } from "@/lib/categories";
+import { priceUnits, getUnitLabel } from "@/lib/units";
 import { useTranslations, useLocale } from "next-intl";
 import {
   Squares2X2Icon,
@@ -18,8 +19,6 @@ import {
 
 // Supabase Storage bucket for product images/videos (must exist in Supabase Storage).
 const STORAGE_BUCKET = "products";
-
-const PRICE_UNITS = ["pièce", "m²", "rouleau", "panneau", "ml"];
 
 const isVideoUrl = (url: string): boolean => /\.(mp4|webm|mov|avi|quicktime)(\?|$)/i.test(url);
 const isVideoFile = (file: File): boolean => file.type.startsWith("video/");
@@ -152,7 +151,7 @@ export default function AdminProductsPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        setFetchError("Session expirée. Reconnectez-vous.");
+        setFetchError(t("session_expired"));
         setProducts([]);
         return;
       }
@@ -166,7 +165,7 @@ export default function AdminProductsPage() {
       setProducts(data ?? []);
     } catch (err) {
       console.error("Error fetching products:", err);
-      const message = err instanceof Error ? err.message : "Impossible de charger les produits.";
+      const message = err instanceof Error ? err.message : t("load_products_error");
       setFetchError(message);
       setProducts([]);
     } finally {
@@ -205,7 +204,7 @@ export default function AdminProductsPage() {
       console.error("Storage remove error:", error);
       return;
     }
-    setNotification("Image supprimée");
+    setNotification(t("image_deleted"));
     setTimeout(() => setNotification(""), 3000);
   }
 
@@ -228,7 +227,7 @@ export default function AdminProductsPage() {
       setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error("Error deleting product:", err);
-      alert("Erreur lors de la suppression");
+      alert(t("delete_product_error"));
     }
   }
 
@@ -254,7 +253,7 @@ export default function AdminProductsPage() {
         const filePath = `products/${fileName}`;
 
         const { error: uploadError } = await supabase.storage.from(STORAGE_BUCKET).upload(filePath, file);
-        if (uploadError) throw new Error(`Échec du téléversement de l'image ${i + 1}: ${uploadError.message}`);
+        if (uploadError) throw new Error(t("upload_failed", { index: i + 1, message: uploadError.message }));
 
         const { data: urlData } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
         newlyUploadedUrls.push(urlData.publicUrl);
@@ -288,7 +287,7 @@ export default function AdminProductsPage() {
           .update(updateData)
           .eq("id", editingProductId)
           .select("*");
-        if (updateError) throw new Error(updateError.message || "Échec de la mise à jour");
+        if (updateError) throw new Error(updateError.message || t("update_failed"));
         if (updatedRows?.[0]) {
           setProducts((prev) => prev.map((p) => (p.id === editingProductId ? updatedRows[0] : p)));
         } else {
@@ -299,7 +298,7 @@ export default function AdminProductsPage() {
           .from("products")
           .insert(productData)
           .select("*");
-        if (insertError) throw new Error(insertError.message || "Échec de l'enregistrement");
+        if (insertError) throw new Error(insertError.message || t("save_failed"));
         if (insertedRows?.[0]) {
           setProducts((prev) => [insertedRows[0], ...prev]);
         } else {
@@ -309,7 +308,7 @@ export default function AdminProductsPage() {
 
       cleanupAndClose();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Erreur lors de l'enregistrement.";
+      const errorMessage = err instanceof Error ? err.message : t("save_error_generic");
       setSaveError(errorMessage);
       console.error("Full error:", err);
     } finally {
@@ -414,7 +413,7 @@ export default function AdminProductsPage() {
 
   const filteredProducts = products.filter((p) => {
     const q = searchQuery.toLowerCase();
-    const categoryLabel = getCategoryLabel(p.category, "fr").toLowerCase();
+    const categoryLabel = getCategoryLabel(p.category, locale).toLowerCase();
     const matchesSearch =
       p.title.toLowerCase().includes(q) ||
       (p.category || "").toLowerCase().includes(q) ||
@@ -473,7 +472,7 @@ export default function AdminProductsPage() {
 
           {fetchError && (
             <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-              <p className="font-semibold">Impossible de charger les produits</p>
+              <p className="font-semibold">{t("fetch_error_title")}</p>
               <p className="mt-1">{fetchError}</p>
             </div>
           )}
@@ -490,8 +489,8 @@ export default function AdminProductsPage() {
 
           <div className="mb-8 mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-[#404040] sm:text-3xl">Gestion des produits</h2>
-              <p className="mt-1 text-sm text-gray-600">{filteredProducts.length} produit(s)</p>
+              <h2 className="text-2xl font-bold text-[#404040] sm:text-3xl">{t("manage_products_title")}</h2>
+              <p className="mt-1 text-sm text-gray-600">{t("products_count", { count: filteredProducts.length })}</p>
             </div>
             <button
               onClick={() => {
@@ -504,7 +503,7 @@ export default function AdminProductsPage() {
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              Ajouter un produit
+              {t("add_product")}
             </button>
           </div>
 
@@ -521,10 +520,10 @@ export default function AdminProductsPage() {
               onChange={(e) => setFilterCategory(e.target.value)}
               className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-[#404040] focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30 sm:min-w-[170px]"
             >
-              <option value="">Toutes les catégories</option>
+              <option value="">{t("all_categories")}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.fr}
+                  {getCategoryLabel(c.id, locale)}
                 </option>
               ))}
             </select>
@@ -533,33 +532,33 @@ export default function AdminProductsPage() {
               onChange={(e) => setFilterStock(e.target.value)}
               className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-[#404040] focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30 sm:min-w-[150px]"
             >
-              <option value="">Toute disponibilité</option>
-              <option value="in_stock">Disponible</option>
-              <option value="out_of_stock">Sur commande</option>
+              <option value="">{t("all_availability")}</option>
+              <option value="in_stock">{t("in_stock")}</option>
+              <option value="out_of_stock">{t("out_of_stock")}</option>
             </select>
           </div>
 
           {loading ? (
             <div className="rounded-xl border border-gray-100 bg-white p-8 text-center">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-b-2 border-[#EFBA1C]"></div>
-              <p className="mt-3 text-gray-600">Chargement des produits...</p>
+              <p className="mt-3 text-gray-600">{t("loading_products")}</p>
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="rounded-xl border border-gray-100 bg-white p-8 text-center">
-              <p className="text-gray-600">Aucun produit trouvé.</p>
+              <p className="text-gray-600">{t("no_products_found")}</p>
             </div>
           ) : (
             <div className="w-full overflow-x-auto rounded-xl border border-gray-100 shadow-md">
               <table className="w-full">
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">Image</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">Titre</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">Catégorie</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">Prix</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">Stock</th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-[#404040]">Visible</th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-[#404040]">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("image")}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("title")}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("category")}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("price")}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#404040]">{t("stock")}</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-[#404040]">{t("visible")}</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-[#404040]">{t("actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -583,12 +582,12 @@ export default function AdminProductsPage() {
                       <td className="px-4 py-3 text-sm font-medium text-[#404040]">
                         {product.title}
                         {product.is_promotion && (
-                          <span className="ml-2 rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-green-700">Promo</span>
+                          <span className="ml-2 rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-green-700">{t("promo_badge")}</span>
                         )}
                       </td>
                       <td className="px-4 py-3">
                         <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
-                          {getCategoryLabel(product.category, "fr")}
+                          {getCategoryLabel(product.category, locale)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm font-semibold text-[#EFBA1C]">
@@ -596,7 +595,7 @@ export default function AdminProductsPage() {
                           ? product.promo_price.toLocaleString()
                           : product.price.toLocaleString()}{" "}
                         MAD
-                        <span className="text-xs font-normal text-gray-400"> /{product.price_unit ?? "pièce"}</span>
+                        <span className="text-xs font-normal text-gray-400"> /{getUnitLabel(product.price_unit, locale)}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span
@@ -604,7 +603,7 @@ export default function AdminProductsPage() {
                             product.stock_status === "out_of_stock" ? "bg-orange-100 text-orange-800" : "bg-green-100 text-green-800"
                           }`}
                         >
-                          {product.stock_status === "out_of_stock" ? "Sur commande" : "Disponible"}
+                          {product.stock_status === "out_of_stock" ? t("out_of_stock") : t("in_stock")}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -613,7 +612,7 @@ export default function AdminProductsPage() {
                           className={`inline-flex items-center justify-center rounded-full p-1.5 transition-colors ${
                             product.is_visible ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
                           }`}
-                          title={product.is_visible ? "Visible sur le site" : "Masqué"}
+                          title={product.is_visible ? t("visible_on_site") : t("hidden")}
                         >
                           {product.is_visible ? (
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -659,7 +658,7 @@ export default function AdminProductsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <h3 className="text-2xl font-bold text-[#404040]">{editingProductId ? "Modifier le produit" : "Ajouter un produit"}</h3>
+              <h3 className="text-2xl font-bold text-[#404040]">{editingProductId ? t("edit_product") : t("add_product")}</h3>
             </div>
 
             <form onSubmit={handleSaveProduct} className="space-y-5 p-6 sm:p-8">
@@ -671,15 +670,15 @@ export default function AdminProductsPage() {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-[#404040]">Titre *</label>
-                  <input type="text" required placeholder="Panneau PVC Marbre Noir" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
+                  <label className="block text-sm font-medium text-[#404040]">{t("title_required_label")}</label>
+                  <input type="text" required placeholder={t("title_placeholder")} value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#404040]">Catégorie *</label>
+                  <label className="block text-sm font-medium text-[#404040]">{t("category_required_label")}</label>
                   <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30">
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.fr}
+                        {getCategoryLabel(c.id, locale)}
                       </option>
                     ))}
                   </select>
@@ -688,26 +687,26 @@ export default function AdminProductsPage() {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-[#404040]">Dimensions</label>
-                  <input type="text" placeholder="1.20m x 3m" value={formData.dimensions} onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
+                  <label className="block text-sm font-medium text-[#404040]">{t("dimensions_label")}</label>
+                  <input type="text" placeholder={t("dimensions_placeholder")} value={formData.dimensions} onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#404040]">Épaisseur</label>
-                  <input type="text" placeholder="3mm, 8mm..." value={formData.thickness} onChange={(e) => setFormData({ ...formData, thickness: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
+                  <label className="block text-sm font-medium text-[#404040]">{t("thickness_label")}</label>
+                  <input type="text" placeholder={t("thickness_placeholder")} value={formData.thickness} onChange={(e) => setFormData({ ...formData, thickness: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
                 </div>
               </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-[#404040]">Prix (MAD) *</label>
+                  <label className="block text-sm font-medium text-[#404040]">{t("price_mad_label")}</label>
                   <input type="number" step="0.01" required placeholder="210.00" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#404040]">Unité de prix</label>
+                  <label className="block text-sm font-medium text-[#404040]">{t("price_unit_label")}</label>
                   <select value={formData.price_unit} onChange={(e) => setFormData({ ...formData, price_unit: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30">
-                    {PRICE_UNITS.map((u) => (
-                      <option key={u} value={u}>
-                        {u}
+                    {priceUnits.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {getUnitLabel(u.id, locale)}
                       </option>
                     ))}
                   </select>
@@ -716,41 +715,41 @@ export default function AdminProductsPage() {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-[#404040]">Disponibilité</label>
+                  <label className="block text-sm font-medium text-[#404040]">{t("availability_label")}</label>
                   <select value={formData.stock_status} onChange={(e) => setFormData({ ...formData, stock_status: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30">
-                    <option value="in_stock">Disponible</option>
-                    <option value="out_of_stock">Sur commande</option>
+                    <option value="in_stock">{t("in_stock")}</option>
+                    <option value="out_of_stock">{t("out_of_stock")}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#404040]">Prix promo (MAD)</label>
-                  <input type="number" step="0.01" placeholder="Laisser vide si pas de promo" disabled={!formData.is_promotion} value={formData.promo_price} onChange={(e) => setFormData({ ...formData, promo_price: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30 disabled:cursor-not-allowed disabled:bg-gray-100" />
+                  <label className="block text-sm font-medium text-[#404040]">{t("promo_price_label")}</label>
+                  <input type="number" step="0.01" placeholder={t("promo_price_placeholder")} disabled={!formData.is_promotion} value={formData.promo_price} onChange={(e) => setFormData({ ...formData, promo_price: e.target.value })} className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30 disabled:cursor-not-allowed disabled:bg-gray-100" />
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-6">
                 <label className="flex items-center gap-2 text-sm font-medium text-[#404040]">
                   <input type="checkbox" checked={formData.is_promotion} onChange={(e) => setFormData({ ...formData, is_promotion: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-[#EFBA1C] focus:ring-[#EFBA1C]" />
-                  En promotion
+                  {t("on_promotion")}
                 </label>
                 <label className="flex items-center gap-2 text-sm font-medium text-[#404040]">
                   <input type="checkbox" checked={formData.free_delivery} onChange={(e) => setFormData({ ...formData, free_delivery: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-[#EFBA1C] focus:ring-[#EFBA1C]" />
-                  Livraison gratuite
+                  {t("free_delivery_label")}
                 </label>
                 <label className="flex items-center gap-2 text-sm font-medium text-[#404040]">
                   <input type="checkbox" checked={formData.is_visible} onChange={(e) => setFormData({ ...formData, is_visible: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-[#EFBA1C] focus:ring-[#EFBA1C]" />
-                  Visible sur le site
+                  {t("visible_on_site_label")}
                 </label>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#404040]">Description</label>
-                <textarea placeholder="Détails, mesures, infos d'installation..." rows={6} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="mt-2 w-full resize-none rounded-lg border border-gray-200 px-4 py-2.5 leading-relaxed text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
+                <label className="block text-sm font-medium text-[#404040]">{t("description_label")}</label>
+                <textarea placeholder={t("description_placeholder")} rows={6} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="mt-2 w-full resize-none rounded-lg border border-gray-200 px-4 py-2.5 leading-relaxed text-[#404040] placeholder:text-gray-400 focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
               </div>
 
               {(existingImages.length > 0 || previewImages.length > 0) && (
                 <div>
-                  <label className="mb-3 block text-sm font-medium text-[#404040]">Images / Vidéos</label>
+                  <label className="mb-3 block text-sm font-medium text-[#404040]">{t("images_videos")}</label>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                     {existingImages.map((imageUrl, index) => (
                       <div key={`existing-${index}`} className="group relative">
@@ -768,7 +767,7 @@ export default function AdminProductsPage() {
                         </div>
                         <button type="button" onClick={() => removePreviewImage(index)} className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-lg">×</button>
                         {mainImageIndex === index && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-[#EFBA1C] py-1 text-center text-xs font-semibold text-[#404040]">Couverture</div>
+                          <div className="absolute bottom-0 left-0 right-0 bg-[#EFBA1C] py-1 text-center text-xs font-semibold text-[#404040]">{t("cover_image")}</div>
                         )}
                       </div>
                     ))}
@@ -785,11 +784,11 @@ export default function AdminProductsPage() {
                           ) : (
                             <img src={previewUrl} alt={`Nouvelle image ${index + 1}`} className="h-full w-full object-cover" />
                           )}
-                          <div className="absolute left-1 top-1 rounded bg-blue-500 px-2 py-0.5 text-xs font-semibold text-white">New</div>
+                          <div className="absolute left-1 top-1 rounded bg-blue-500 px-2 py-0.5 text-xs font-semibold text-white">{t("new_badge")}</div>
                         </div>
                         <button type="button" onClick={() => removePreviewImage(existingImages.length + index)} className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-lg">×</button>
                         {mainImageIndex === existingImages.length + index && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-[#EFBA1C] py-1 text-center text-xs font-semibold text-[#404040]">Couverture</div>
+                          <div className="absolute bottom-0 left-0 right-0 bg-[#EFBA1C] py-1 text-center text-xs font-semibold text-[#404040]">{t("cover_image")}</div>
                         )}
                       </div>
                     ))}
@@ -798,9 +797,9 @@ export default function AdminProductsPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-[#404040]">Ajouter des photos / vidéos</label>
+                <label className="block text-sm font-medium text-[#404040]">{t("add_photos_videos")}</label>
                 <input type="file" accept="image/*,video/*" multiple onChange={handleFileSelect} className="mt-2 w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-[#404040] file:mr-4 file:rounded-md file:border-0 file:bg-[#404040] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#606060] focus:border-[#EFBA1C] focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]/30" />
-                {imageFiles.length > 0 && <p className="mt-1.5 text-xs text-gray-600">{imageFiles.length} fichier(s) sélectionné(s)</p>}
+                {imageFiles.length > 0 && <p className="mt-1.5 text-xs text-gray-600">{t("files_selected", { count: imageFiles.length })}</p>}
               </div>
 
               <div className="flex flex-col gap-3 pt-4 sm:flex-row">
@@ -822,7 +821,7 @@ export default function AdminProductsPage() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
               <span className="text-3xl text-red-500">🗑️</span>
             </div>
-            <h3 className="mb-2 text-xl font-bold text-gray-900">Supprimer le produit</h3>
+            <h3 className="mb-2 text-xl font-bold text-gray-900">{t("delete_product_title")}</h3>
             <p className="mb-6 text-gray-500">{t("delete_confirm")}</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteId(null)} className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50">{t("cancel")}</button>
