@@ -8,16 +8,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params
   const titles: Record<string, string> = {
-    fr: 'À Propos — LaTour Immo',
-    en: 'About — LaTour Immo',
-    ar: 'عن لاتور إيمو',
-    es: 'Sobre Nosotros — LaTour Immo',
+    fr: 'À Propos — Lolo Deco',
+    en: 'About — Lolo Deco',
+    ar: 'عن Lolo Deco',
+    es: 'Sobre Nosotros — Lolo Deco',
   }
   return {
     title: titles[locale] ?? titles.fr,
-    description: 'Découvrez LaTour Immo, votre agence immobilière de confiance au Maroc.',
+    description: 'Découvrez Lolo Deco, votre spécialiste en décoration intérieure et extérieure à Agadir.',
     alternates: {
-      canonical: `https://latourImmomaroc.com/${locale}/about`,
+      canonical: `https://lolodeco.ma/${locale}/about`,
     },
   }
 }

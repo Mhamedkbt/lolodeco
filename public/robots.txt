@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://latourImmomaroc.com/sitemap.xml
+Sitemap: https://lolodeco.ma/sitemap.xml
 
 Disallow: /admin/
 Disallow: /api/

@@ -8,27 +8,27 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params
   const titles: Record<string, string> = {
-    fr: 'Accueil — Immobilier de Luxe au Maroc',
-    en: 'Home — Luxury Real Estate in Morocco',
-    ar: 'الرئيسية — عقارات فاخرة في المغرب',
-    es: 'Inicio — Inmuebles de Lujo en Marruecos',
+    fr: 'Accueil — Lolo Deco Décoration Agadir',
+    en: 'Home — Lolo Deco Home Decoration',
+    ar: 'الرئيسية — Lolo Deco للديكور',
+    es: 'Inicio — Lolo Deco Decoración',
   }
   const descs: Record<string, string> = {
-    fr: 'Trouvez votre propriété de rêve au Maroc avec LaTour Immo. Villas, appartements et espaces commerciaux de luxe.',
-    en: 'Find your dream property in Morocco with LaTour Immo. Luxury villas, apartments and commercial spaces.',
-    ar: 'اعثر على عقار أحلامك في المغرب مع لاتور إيمو. فيلات فاخرة وشقق ومساحات تجارية.',
-    es: 'Encuentra la propiedad de tus sueños en Marruecos con LaTour Immo.',
+    fr: 'Transformez votre intérieur avec Lolo Deco. Bardage PVC, moulures, marbre PVC, papier peint à Agadir.',
+    en: 'Transform your interior with Lolo Deco. PVC cladding, moldings, PVC marble, wallpaper in Agadir.',
+    ar: 'حول ديكور منزلك مع Lolo Deco. بارده PVC، قوالب، رخام PVC، ورق جدران في أكادير.',
+    es: 'Transforma tu interior con Lolo Deco. Revestimiento PVC, molduras, mármol PVC en Agadir.',
   }
   return {
     title: titles[locale] ?? titles.fr,
     description: descs[locale] ?? descs.fr,
     alternates: {
-      canonical: `https://latourImmomaroc.com/${locale}`,
+      canonical: `https://lolodeco.ma/${locale}`,
       languages: {
-        'fr': 'https://latourImmomaroc.com/fr',
-        'en': 'https://latourImmomaroc.com/en',
-        'ar': 'https://latourImmomaroc.com/ar',
-        'es': 'https://latourImmomaroc.com/es',
+        'fr': 'https://lolodeco.ma/fr',
+        'en': 'https://lolodeco.ma/en',
+        'ar': 'https://lolodeco.ma/ar',
+        'es': 'https://lolodeco.ma/es',
       },
     },
   }

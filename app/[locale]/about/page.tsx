@@ -60,10 +60,10 @@ const CounterItem = ({ item }: { item: HighlightItem }) => {
 
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-6 text-center shadow-sm">
-      <p ref={elementRef} className="text-3xl font-bold tabular-nums text-[#c9a84c] sm:text-4xl">
+      <p ref={elementRef} className="text-3xl font-bold tabular-nums text-[#EFBA1C] sm:text-4xl">
         {count}
       </p>
-      <p className="mt-2 text-sm font-semibold text-[#1a2b4a] sm:text-base">
+      <p className="mt-2 text-sm font-semibold text-[#404040] sm:text-base">
         {item.label}
       </p>
     </div>
@@ -127,12 +127,12 @@ export default function AboutPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-[#1a2b4a] px-4 py-12 sm:px-6 lg:px-8">
+      <section className="bg-[#f8f8f8] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl text-center">
-          <h1 className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+          <h1 className="text-3xl font-bold text-[#404040] sm:text-4xl lg:text-5xl">
             {t('title')}
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-300">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
             {t('subtitle')}
           </p>
         </div>
@@ -142,17 +142,17 @@ export default function AboutPage() {
       <section className="bg-white px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
-            <h2 className="text-2xl font-bold text-[#1a2b4a] sm:text-3xl">
+            <h2 className="text-2xl font-bold text-[#404040] sm:text-3xl">
               {t('story_title')}
             </h2>
-            <div className="mt-2 h-1 w-16 rounded-full bg-[#c9a84c]" />
+            <div className="mt-2 h-1 w-16 rounded-full bg-[#EFBA1C]" />
             <p className="mt-6 leading-relaxed text-gray-600">
               {t('story_p1')}
             </p>
             <p className="mt-4 leading-relaxed text-gray-600">
-              <span className="font-semibold text-[#1a2b4a]">{t('mission_label')}</span>{' '}
+              <span className="font-semibold text-[#404040]">{t('mission_label')}</span>{' '}
               {t('mission_text')}{' '}
-              <span className="font-semibold text-[#1a2b4a]">{t('vision_label')}</span>{' '}
+              <span className="font-semibold text-[#404040]">{t('vision_label')}</span>{' '}
               {t('vision_text')}
             </p>
           </div>
@@ -169,25 +169,25 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="bg-[#1a2b4a] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <section className="bg-[#f8f8f8] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-center text-2xl font-bold text-white sm:text-3xl">
+          <h2 className="text-center text-2xl font-bold text-[#404040] sm:text-3xl">
             {t('values_title')}
           </h2>
-          <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-[#c9a84c]" />
+          <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-[#EFBA1C]" />
           <div className="mt-10 grid gap-6 sm:grid-cols-3">
             {values.map((value) => (
               <div
                 key={value.title}
-                className="rounded-xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-sm"
+                className="rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm"
               >
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#1a2b4a] text-[#c9a84c] ring-2 ring-[#c9a84c]/40">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#404040] text-[#EFBA1C] ring-2 ring-[#EFBA1C]/40">
                   {value.icon}
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-white">
+                <h3 className="mt-4 text-lg font-bold text-[#404040]">
                   {value.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-300">
+                <p className="mt-2 text-sm leading-relaxed text-gray-600">
                   {value.description}
                 </p>
               </div>
@@ -199,10 +199,10 @@ export default function AboutPage() {
       {/* Why Choose Us */}
       <section className="bg-gray-50 px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-center text-2xl font-bold text-[#1a2b4a] sm:text-3xl">
+          <h2 className="text-center text-2xl font-bold text-[#404040] sm:text-3xl">
             {t('why_title')}
           </h2>
-          <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-[#c9a84c]" />
+          <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-[#EFBA1C]" />
           <div className="mt-10 grid grid-cols-2 gap-6 lg:grid-cols-4">
             {highlights.map((item) => (
               <CounterItem key={item.label} item={item} />

@@ -19,15 +19,13 @@ export const dynamic = "force-dynamic";
 
 const navItems = [
   { labelKey: "nav_dashboard", href: "/admin/dashboard", icon: "dashboard" },
-  { labelKey: "nav_properties", href: "/admin/properties", icon: "properties" },
+  { labelKey: "nav_properties", href: "/admin/products", icon: "properties" },
   { labelKey: "nav_messages", href: "/admin/messages", icon: "messages" },
-  { labelKey: "nav_evaluations", href: "/admin/evaluations", icon: "evaluations" },
 ];
 
 const dashboardStatCards = [
   { labelKey: "stat_total_properties", key: "totalProperties", icon: "building" },
   { labelKey: "stat_total_messages", key: "totalMessages", icon: "envelope" },
-  { labelKey: "stat_total_evaluations", key: "totalEvaluations", icon: "evaluations" },
   { labelKey: "stat_featured_properties", key: "featuredProperties", icon: "star" },
 ];
 
@@ -83,7 +81,6 @@ export default function DashboardPage() {
   const [dashboardStats, setDashboardStats] = useState({
     totalProperties: 0,
     totalMessages: 0,
-    totalEvaluations: 0,
     featuredProperties: 0,
   });
   const [statsLoading, setStatsLoading] = useState(true);
@@ -111,28 +108,23 @@ export default function DashboardPage() {
         const [
           { count: totalProperties },
           { count: totalMessages },
-          { count: totalEvaluations },
           { count: featuredProperties },
         ] = await Promise.all([
           supabase
-            .from("properties")
+            .from("products")
             .select("*", { count: "exact", head: true }),
           supabase
             .from("messages")
             .select("*", { count: "exact", head: true }),
           supabase
-            .from("evaluations")
-            .select("*", { count: "exact", head: true }),
-          supabase
-            .from("properties")
+            .from("products")
             .select("*", { count: "exact", head: true })
-            .eq("featured", true),
+            .eq("is_promotion", true),
         ]);
 
         setDashboardStats({
           totalProperties: totalProperties ?? 0,
           totalMessages: totalMessages ?? 0,
-          totalEvaluations: totalEvaluations ?? 0,
           featuredProperties: featuredProperties ?? 0,
         });
       } catch (_err) {
@@ -163,7 +155,7 @@ export default function DashboardPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#c9a84c]"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#EFBA1C]"></div>
           <p className="mt-4 text-gray-600">{t("loading_dashboard")}</p>
         </div>
       </div>
@@ -173,7 +165,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#1a2b4a] text-white shadow-lg transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:top-auto top-16 ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#f8f8f8] text-[#404040] border-r border-gray-200 shadow-lg transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:top-auto top-16 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -184,19 +176,19 @@ export default function DashboardPage() {
                 key={item.href}
                 href={`/${locale}${item.href}`}
                 onClick={closeSidebar}
-                className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-white/10 focus:outline-none focus:bg-white/10"
+                className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-[#404040] transition-colors hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
               >
-                <span className="text-[#c9a84c]">{getIcon(item.icon)}</span>
+                <span className="text-[#EFBA1C]">{getIcon(item.icon)}</span>
                 {t(item.labelKey)}
               </Link>
             ))}
           </nav>
 
-          <div className="border-t border-white/10 p-4">
+          <div className="border-t border-gray-200 p-4">
             <button
               onClick={handleLogout}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#c9a84c] px-4 py-3 text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#c9a84c]"
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#EFBA1C] px-4 py-3 text-sm font-semibold text-[#404040] transition-colors hover:bg-[#F0C040] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
@@ -218,7 +210,7 @@ export default function DashboardPage() {
         <div className="p-4 sm:p-6 lg:p-8 pt-4 md:pt-0">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="mb-4 inline-flex md:hidden items-center justify-center rounded-lg p-2 text-[#1a2b4a] hover:bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#c9a84c]"
+            className="mb-4 inline-flex md:hidden items-center justify-center rounded-lg p-2 text-[#404040] hover:bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]"
             aria-label="Toggle menu"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -231,11 +223,11 @@ export default function DashboardPage() {
           </button>
 
           <div className="mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">{t("dashboard_title")}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#404040]">{t("dashboard_title")}</h2>
             <p className="mt-2 text-sm sm:text-base text-gray-600">{t("dashboard_subtitle")}</p>
           </div>
 
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {dashboardStatCards.map((stat) => (
               <div
                 key={stat.labelKey}
@@ -246,7 +238,7 @@ export default function DashboardPage() {
                     <p className="text-xs sm:text-sm font-medium text-gray-600">
                       {t(stat.labelKey)}
                     </p>
-                    <p className="mt-2 text-2xl sm:text-3xl font-bold text-[#c9a84c]">
+                    <p className="mt-2 text-2xl sm:text-3xl font-bold text-[#EFBA1C]">
                       {statsLoading ? (
                         <span className="inline-block w-8 h-8 animate-pulse bg-yellow-100 rounded" />
                       ) : (
@@ -254,7 +246,7 @@ export default function DashboardPage() {
                       )}
                     </p>
                   </div>
-                  <div className="text-[#c9a84c]">
+                  <div className="text-[#EFBA1C]">
                     {getIcon(stat.icon)}
                   </div>
                 </div>
@@ -263,18 +255,15 @@ export default function DashboardPage() {
           </div>
 
           <div className="mt-8 rounded-xl border border-gray-100 bg-white p-4 sm:p-6 shadow-md">
-            <h3 className="text-lg font-bold text-[#1a2b4a]">{t("quick_actions_title")}</h3>
+            <h3 className="text-lg font-bold text-[#404040]">{t("quick_actions_title")}</h3>
             <div className="mt-4 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
-              <Link href={`/${locale}/admin/properties`} className="rounded-lg border border-[#c9a84c]/30 bg-[#c9a84c]/5 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-[#c9a84c]/10">
+              <Link href={`/${locale}/admin/products`} className="rounded-lg border border-[#EFBA1C]/30 bg-[#EFBA1C]/5 px-4 py-3 text-center font-medium text-[#404040] transition-colors hover:bg-[#EFBA1C]/10">
                 {t("manage_properties")}
               </Link>
-              <Link href={`/${locale}/admin/messages`} className="rounded-lg border border-[#c9a84c]/30 bg-[#c9a84c]/5 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-[#c9a84c]/10">
+              <Link href={`/${locale}/admin/messages`} className="rounded-lg border border-[#EFBA1C]/30 bg-[#EFBA1C]/5 px-4 py-3 text-center font-medium text-[#404040] transition-colors hover:bg-[#EFBA1C]/10">
                 {t("view_messages")}
               </Link>
-              <Link href={`/${locale}/admin/evaluations`} className="rounded-lg border border-[#c9a84c]/30 bg-[#c9a84c]/5 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-[#c9a84c]/10">
-                {t("review_evaluations")}
-              </Link>
-              <Link href={`/${locale}`} className="rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-center font-medium text-[#1a2b4a] transition-colors hover:bg-gray-100">
+              <Link href={`/${locale}`} className="rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-center font-medium text-[#404040] transition-colors hover:bg-gray-100">
                 {t("back_to_site")}
               </Link>
             </div>

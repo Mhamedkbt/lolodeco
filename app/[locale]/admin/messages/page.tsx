@@ -27,9 +27,8 @@ interface Message {
 
 const navItems = [
   { labelKey: "nav_dashboard", href: "/admin/dashboard", icon: "dashboard" },
-  { labelKey: "nav_properties", href: "/admin/properties", icon: "properties" },
+  { labelKey: "nav_properties", href: "/admin/products", icon: "properties" },
   { labelKey: "nav_messages", href: "/admin/messages", icon: "messages" },
-  { labelKey: "nav_evaluations", href: "/admin/evaluations", icon: "evaluations" },
 ];
 
 function getIcon(iconType: string) {
@@ -203,7 +202,7 @@ export default function MessagesPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#c9a84c]"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#EFBA1C]"></div>
           <p className="mt-4 text-gray-600">{t("loading")}</p>
         </div>
       </div>
@@ -213,7 +212,7 @@ export default function MessagesPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#1a2b4a] text-white shadow-lg transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:top-auto top-16 ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#f8f8f8] text-[#404040] border-r border-gray-200 shadow-lg transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:top-auto top-16 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -224,19 +223,19 @@ export default function MessagesPage() {
                 key={item.href}
                 href={`/${locale}${item.href}`}
                 onClick={closeSidebar}
-                className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-white/10 focus:outline-none focus:bg-white/10"
+                className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-[#404040] transition-colors hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
               >
-                <span className="text-[#c9a84c]">{getIcon(item.icon)}</span>
+                <span className="text-[#EFBA1C]">{getIcon(item.icon)}</span>
                 {t(item.labelKey)}
               </Link>
             ))}
           </nav>
 
-          <div className="border-t border-white/10 p-4">
+          <div className="border-t border-gray-200 p-4">
             <button
               onClick={handleLogout}
               disabled={logoutLoading}
-              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#c9a84c] px-4 py-3 text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#c9a84c]"
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#EFBA1C] px-4 py-3 text-sm font-semibold text-[#404040] transition-colors hover:bg-[#F0C040] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
@@ -258,7 +257,7 @@ export default function MessagesPage() {
         <div className="p-4 sm:p-6 md:p-8 w-full overflow-x-hidden pt-4 md:pt-0">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="mb-4 inline-flex md:hidden items-center justify-center rounded-lg p-2 text-[#1a2b4a] hover:bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#c9a84c]"
+            className="mb-4 inline-flex md:hidden items-center justify-center rounded-lg p-2 text-[#404040] hover:bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#EFBA1C]"
             aria-label="Toggle menu"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -271,13 +270,13 @@ export default function MessagesPage() {
           </button>
 
           <div className="mt-8 mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#1a2b4a]">{t("manage_messages_title")}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#404040]">{t("manage_messages_title")}</h2>
             <p className="mt-1 text-sm text-gray-600">{messages.length} message{messages.length !== 1 ? "s" : ""}</p>
           </div>
 
           {loading ? (
             <div className="rounded-xl border border-gray-100 bg-white p-8 text-center">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#c9a84c]"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#EFBA1C]"></div>
               <p className="mt-3 text-gray-600">{t("loading_messages")}</p>
             </div>
           ) : messages.length === 0 ? (
@@ -295,7 +294,7 @@ export default function MessagesPage() {
                   key={message.id}
                   className={`rounded-lg border p-4 cursor-pointer transition-all ${
                     !message.read
-                      ? "border-[#c9a84c] bg-[#c9a84c]/10 shadow-sm hover:shadow-md"
+                      ? "border-[#EFBA1C] bg-[#EFBA1C]/10 shadow-sm hover:shadow-md"
                       : "border-gray-100 bg-white hover:shadow-md"
                   }`}
                   onClick={() => openMessage(message)}
@@ -303,11 +302,11 @@ export default function MessagesPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className={`text-sm font-semibold ${message.read ? "text-gray-600" : "text-[#1a2b4a]"}`}>
+                        <h3 className={`text-sm font-semibold ${message.read ? "text-gray-600" : "text-[#404040]"}`}>
                           {message.name}
                         </h3>
                         {!message.read && (
-                          <span className="inline-block h-2 w-2 rounded-full bg-[#c9a84c]"></span>
+                          <span className="inline-block h-2 w-2 rounded-full bg-[#EFBA1C]"></span>
                         )}
                       </div>
                       <p className={`text-xs mt-0.5 ${message.read ? "text-gray-500" : "text-gray-600"}`}>{message.email}</p>
@@ -322,7 +321,7 @@ export default function MessagesPage() {
     e.stopPropagation();
     handleToggleStatus(message.id, message.read);
   }}
-  className="p-2 rounded-lg text-gray-400 hover:text-[#c9a84c] hover:bg-gray-100 transition-colors"
+  className="p-2 rounded-lg text-gray-400 hover:text-[#EFBA1C] hover:bg-gray-100 transition-colors"
   title={message.read ? "Mark as unread" : "Mark as read"}
 >
 
@@ -366,7 +365,7 @@ export default function MessagesPage() {
           <div className="w-full max-w-2xl max-h-screen overflow-y-auto rounded-xl bg-white shadow-2xl">
             <div className="sticky top-0 border-b border-gray-200 bg-white p-6 sm:p-8 flex items-start justify-between">
               <div>
-                <h3 className="text-2xl font-bold text-[#1a2b4a]">Message from {selectedMessage.name}</h3>
+                <h3 className="text-2xl font-bold text-[#404040]">Message from {selectedMessage.name}</h3>
                 <p className="mt-1 text-sm text-gray-600">{formatDate(selectedMessage.created_at)}</p>
               </div>
               <button
@@ -384,21 +383,21 @@ export default function MessagesPage() {
                 <h4 className="text-sm font-semibold text-gray-600 mb-2">Sender Information</h4>
                 <div className="space-y-2 text-sm">
                 <p>
-  <span className="font-medium text-[#1a2b4a]">Name:</span>{" "}
-  <span className="text-[#c9a84c]">
+  <span className="font-medium text-[#404040]">Name:</span>{" "}
+  <span className="text-[#EFBA1C]">
     {selectedMessage.name}
   </span>
 </p>
                   <p>
-                    <span className="font-medium text-[#1a2b4a]">Email:</span>{" "}
-                    <a href={`mailto:${selectedMessage.email}`} className="text-[#c9a84c] hover:underline">
+                    <span className="font-medium text-[#404040]">Email:</span>{" "}
+                    <a href={`mailto:${selectedMessage.email}`} className="text-[#EFBA1C] hover:underline">
                       {selectedMessage.email}
                     </a>
                   </p>
                   {selectedMessage.phone && (
                     <p>
-                      <span className="font-medium text-[#1a2b4a]">Phone:</span>{" "}
-                      <a href={`tel:${selectedMessage.phone}`} className="text-[#c9a84c] hover:underline">
+                      <span className="font-medium text-[#404040]">Phone:</span>{" "}
+                      <a href={`tel:${selectedMessage.phone}`} className="text-[#EFBA1C] hover:underline">
                         {selectedMessage.phone}
                       </a>
                     </p>
@@ -416,7 +415,7 @@ export default function MessagesPage() {
                   onClick={() => {
                     handleToggleStatus(selectedMessage.id, selectedMessage.read);
                   }}
-                  className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-[#404040] transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400"
                 >
                   {selectedMessage.read ? "Mark as Unread" : "Mark as Read"}
                 </button>

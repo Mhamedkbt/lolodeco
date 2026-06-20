@@ -8,16 +8,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params
   const titles: Record<string, string> = {
-    fr: 'Contact — LaTour Immo',
-    en: 'Contact — LaTour Immo',
-    ar: 'اتصل بنا — لاتور إيمو',
-    es: 'Contacto — LaTour Immo',
+    fr: 'Contact — Lolo Deco',
+    en: 'Contact — Lolo Deco',
+    ar: 'اتصل بنا — Lolo Deco',
+    es: 'Contacto — Lolo Deco',
   }
   return {
     title: titles[locale] ?? titles.fr,
-    description: 'Contactez LaTour Immo pour toute question sur nos propriétés au Maroc.',
+    description: 'Contactez Lolo Deco pour toute question sur nos produits de décoration à Agadir.',
     alternates: {
-      canonical: `https://latourImmomaroc.com/${locale}/contact`,
+      canonical: `https://lolodeco.ma/${locale}/contact`,
     },
   }
 }

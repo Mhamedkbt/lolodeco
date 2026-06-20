@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
@@ -11,66 +10,47 @@ export default function Navbar() {
   const t = useTranslations("nav");
   const locale = useLocale();
   
-  // Create a reference to the navbar element to check where clicks happen
   const navRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { href: `/${locale}`, label: t("home") },
-    { href: `/${locale}/properties`, label: t("properties") },
+    { href: `/${locale}/products`, label: t("properties") },
     { href: `/${locale}/about`, label: t("about") },
-    { href: `/${locale}/evaluation`, label: t("evaluation") },
     { href: `/${locale}/contact`, label: t("contact") },
   ];
 
-  // Effect hook to handle clicks outside the navbar
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      // If the menu is open and the click target is not inside the navbar, close it
       if (menuOpen && navRef.current && !navRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
       }
     }
 
-    // Bind the event listener to the document body
     document.addEventListener("mousedown", handleClickOutside);
     
-    // Clean up the event listener when component unmounts
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpen]);
 
   return (
-    // Attached the navRef here to wrap the header area
-    <header ref={navRef} className="sticky top-0 z-50 bg-[#1a2b4a] shadow-md">
-      {/* py-[2px] gives micro padding top and bottom to the whole nav row */}
-      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 py-[2px] sm:px-6 lg:px-8"> 
+    <header ref={navRef} className="sticky top-0 z-50 bg-white shadow-md">
+      <nav className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 py-[2px] sm:px-6 lg:px-8"> 
         
-        {/* Logo Link Wrapper */}
         <Link
           href={`/${locale}`}
           className="flex items-center"
           onClick={() => setMenuOpen(false)}
         >
-          <div className="relative h-20 w-40 sm:w-44 md:w-48 lg:w-52">
-            <Image
-              src="/images/LaTourImmoLogoPng.png"
-              alt="LaTour Immo Logo"
-              fill
-              priority
-              className="object-contain object-left"
-              sizes="(max-width: 768px) 160px, 208px"
-            />
-          </div>
+          <img src="/images/LoloDecoLogo.png" className="h-28 w-auto sm:h-[110px]" alt="Lolo Déco" />
         </Link>
 
-        {/* Desktop Navigation Links */}
         <ul className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="text-sm font-medium text-white transition-colors hover:text-[#c9a84c] lg:text-base"
+                className="text-sm font-medium text-[#404040] transition-colors hover:text-[#EFBA1C] lg:text-base"
               >
                 {link.label}
               </Link>
@@ -78,14 +58,12 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Desktop Action Box (Language Switcher and Phone Button) */}
         <div className="hidden items-center gap-3 md:flex">
           <Link 
             href={`/${locale}/admin`}
-            className="text-white transition-colors hover:text-[#c9a84c]"
+            className="text-[#404040] transition-colors hover:text-[#EFBA1C]"
             aria-label="Admin Login"
           >
-            {/* Person Icon */}
             <svg 
               className="h-6 w-6" 
               fill="none" 
@@ -100,22 +78,20 @@ export default function Navbar() {
           <LanguageSwitcher />
           
           <a
-            href="tel:+212661141811"
-            className="rounded-md bg-[#c9a84c] px-5 py-2.5 text-sm font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e] lg:text-base"
+            href="tel:+212660546352"
+            className="rounded-md bg-[#EFBA1C] px-5 py-2.5 text-sm font-semibold text-[#404040] transition-colors hover:bg-[#F0C040] lg:text-base"
           >
-            +212661141811
+            0660546352
           </a>
         </div>
 
-        {/* Mobile Controls (Person Icon on the left of Menu Icon) */}
         <div className="flex items-center gap-3 md:hidden">
           <Link 
             href={`/${locale}/admin`}
-            className="p-2 text-white transition-colors hover:text-[#c9a84c]"
+            className="p-2 text-[#404040] transition-colors hover:text-[#EFBA1C]"
             aria-label="Admin Login"
             onClick={() => setMenuOpen(false)}
           >
-            {/* Person Icon */}
             <svg 
               className="h-6 w-6" 
               fill="none" 
@@ -127,15 +103,13 @@ export default function Navbar() {
             </svg>
           </Link>
 
-          {/* Mobile Hamburger Button */}
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-md p-2 text-white hover:text-[#c9a84c]"
+            className="inline-flex items-center justify-center rounded-md p-2 text-[#404040] hover:text-[#EFBA1C]"
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             onClick={() => setMenuOpen((open) => !open)}
           >
-            {/* Sized at h-7 w-7 for improved mobile visibility */}
             <svg
               className="h-7 w-7"
               fill="none"
@@ -162,15 +136,14 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Dropdown Menu */}
       {menuOpen && (
-        <div className="border-t border-white/10 bg-[#1a2b4a] md:hidden">
+        <div className="border-t border-gray-200 bg-white md:hidden">
           <ul className="flex flex-col px-4 py-4 sm:px-6">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="block py-3 text-base font-medium text-white transition-colors hover:text-[#c9a84c]"
+                  className="block py-3 text-base font-medium text-[#404040] transition-colors hover:text-[#EFBA1C]"
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.label}
@@ -179,13 +152,13 @@ export default function Navbar() {
             ))}
             <li className="pt-2">
               <a
-                href="tel:0661141811"
-                className="block rounded-md bg-[#c9a84c] px-4 py-3 text-center text-base font-semibold text-[#1a2b4a] transition-colors hover:bg-[#d4b85e]"
+                href="tel:0660546352"
+                className="block rounded-md bg-[#EFBA1C] px-4 py-3 text-center text-base font-semibold text-[#404040] transition-colors hover:bg-[#F0C040]"
               >
-                +212661141811
+                0660546352
               </a>
             </li>
-            <li className="pt-4 mt-4 border-t border-white/10">
+            <li className="pt-4 mt-4 border-t border-gray-200">
               <LanguageSwitcher />
             </li>
           </ul>

@@ -17,24 +17,24 @@ const languages = [
       </svg>
     ),
   },
-  {
-    code: 'en',
-    label: 'English',
-    short: 'EN',
-    flag: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" className="h-4 w-6 rounded-sm overflow-hidden flex-shrink-0">
-        <clipPath id="a"><path d="M0 0v30h60V0z"/></clipPath>
-        <clipPath id="b"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath>
-        <g clipPath="url(#a)">
-          <path d="M0 0v30h60V0z" fill="#012169"/>
-          <path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6"/>
-          <path d="M0 0l60 30m0-30L0 30" clipPath="url(#b)" stroke="#C8102E" strokeWidth="4"/>
-          <path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10"/>
-          <path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6"/>
-        </g>
-      </svg>
-    ),
-  },
+  // {
+  //   code: 'en',
+  //   label: 'English',
+  //   short: 'EN',
+  //   flag: (
+  //     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" className="h-4 w-6 rounded-sm overflow-hidden flex-shrink-0">
+  //       <clipPath id="a"><path d="M0 0v30h60V0z"/></clipPath>
+  //       <clipPath id="b"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath>
+  //       <g clipPath="url(#a)">
+  //         <path d="M0 0v30h60V0z" fill="#012169"/>
+  //         <path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6"/>
+  //         <path d="M0 0l60 30m0-30L0 30" clipPath="url(#b)" stroke="#C8102E" strokeWidth="4"/>
+  //         <path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10"/>
+  //         <path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6"/>
+  //       </g>
+  //     </svg>
+  //   ),
+  // },
   {
     code: 'ar',
     label: 'العربية',
@@ -50,27 +50,27 @@ const languages = [
       </svg>
     ),
   },
-  {
-    code: 'es',
-    label: 'Español',
-    short: 'ES',
-    flag: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" className="h-4 w-6 rounded-sm overflow-hidden flex-shrink-0">
-        <rect width="750" height="500" fill="#a5001a"/>
-        <rect y="125" width="750" height="250" fill="#fabd00"/>
-        <g transform="translate(190, 185) scale(0.9)">
-          <path d="M0,40 L0,90 C0,115 40,115 40,90 L40,40 Z" fill="#a5001a" stroke="#fabd00" strokeWidth="8"/>
-          <path d="M0,40 L0,90 C0,115 40,115 40,90 L40,40 Z" fill="#fabd00"/>
-          <rect x="-25" y="30" width="10" height="75" fill="#ffffff" stroke="#a5001a" strokeWidth="4"/>
-          <rect x="55" y="30" width="10" height="75" fill="#ffffff" stroke="#a5001a" strokeWidth="4"/>
-          <circle cx="-20" cy="25" r="8" fill="#fabd00"/>
-          <circle cx="60" cy="25" r="8" fill="#fabd00"/>
-          <path d="M-15,15 Q20,-5 55,15 Q20,5 -15,15 Z" fill="#a5001a"/>
-          <path d="M-5,40 L45,40 M-5,65 L45,65 M20,40 L20,105" stroke="#a5001a" strokeWidth="4"/>
-        </g>
-      </svg>
-    ),
-  },
+  // {
+  //   code: 'es',
+  //   label: 'Español',
+  //   short: 'ES',
+  //   flag: (
+  //     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" className="h-4 w-6 rounded-sm overflow-hidden flex-shrink-0">
+  //       <rect width="750" height="500" fill="#a5001a"/>
+  //       <rect y="125" width="750" height="250" fill="#fabd00"/>
+  //       <g transform="translate(190, 185) scale(0.9)">
+  //         <path d="M0,40 L0,90 C0,115 40,115 40,90 L40,40 Z" fill="#a5001a" stroke="#fabd00" strokeWidth="8"/>
+  //         <path d="M0,40 L0,90 C0,115 40,115 40,90 L40,40 Z" fill="#fabd00"/>
+  //         <rect x="-25" y="30" width="10" height="75" fill="#ffffff" stroke="#a5001a" strokeWidth="4"/>
+  //         <rect x="55" y="30" width="10" height="75" fill="#ffffff" stroke="#a5001a" strokeWidth="4"/>
+  //         <circle cx="-20" cy="25" r="8" fill="#fabd00"/>
+  //         <circle cx="60" cy="25" r="8" fill="#fabd00"/>
+  //         <path d="M-15,15 Q20,-5 55,15 Q20,5 -15,15 Z" fill="#a5001a"/>
+  //         <path d="M-5,40 L45,40 M-5,65 L45,65 M20,40 L20,105" stroke="#a5001a" strokeWidth="4"/>
+  //       </g>
+  //     </svg>
+  //   ),
+  // },
 ]
 
 export default function LanguageSwitcher() {
@@ -119,10 +119,10 @@ export default function LanguageSwitcher() {
       {/* Trigger Button */}
       <button
         onClick={toggleDropdown}
-        className="flex items-center gap-2 rounded-lg border border-white/20 
-                   bg-white/10 px-3 py-2 text-white backdrop-blur-sm 
-                   transition-all duration-200 hover:bg-white/20 
-                   hover:border-[#c9a84c]/50 min-w-[80px]"
+        className="flex items-center gap-2 rounded-lg border border-gray-200 
+                   bg-[#f8f8f8] px-3 py-2 text-[#404040] 
+                   transition-all duration-200 hover:bg-gray-100 
+                   hover:border-[#EFBA1C]/50 min-w-[80px]"
       >
         {current.flag}
         <span className="text-xs font-bold tracking-wider">{current.short}</span>
@@ -154,7 +154,7 @@ export default function LanguageSwitcher() {
               className={`flex w-full items-center gap-3 px-4 py-3 
                           text-left text-sm transition-colors duration-150
                           ${locale === lang.code
-                            ? 'bg-[#c9a84c]/10 font-bold text-[#c9a84c]'
+                            ? 'bg-[#EFBA1C]/10 font-bold text-[#EFBA1C]'
                             : 'font-medium text-gray-700 hover:bg-gray-50'
                           }`}
             >
@@ -162,7 +162,7 @@ export default function LanguageSwitcher() {
               <span className="flex-1">{lang.label}</span>
               {locale === lang.code && (
                 <svg xmlns="http://www.w3.org/2000/svg"
-                     className="h-4 w-4 flex-shrink-0 text-[#c9a84c]"
+                     className="h-4 w-4 flex-shrink-0 text-[#EFBA1C]"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round"
                         strokeWidth={2.5} d="M5 13l4 4L19 7" />
