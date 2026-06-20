@@ -112,8 +112,8 @@ export default function AboutPage() {
 
   const highlights = [
     { value: '3+',   label: t('stat_experience') },
-    { value: '20+',  label: t('stat_sold') },
-    { value: '30+',  label: t('stat_clients') },
+    { value: '100+',  label: t('stat_sold') },
+    { value: '100+',  label: t('stat_clients') },
     { value: '24/7', label: t('stat_support') },
   ]
 
@@ -157,12 +157,12 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="relative aspect-4/3 overflow-hidden rounded-2xl shadow-xl">
-            <Image
-              src="/images/modern-luxury-villa-pool-medulin.jpg"
-              alt="Luxury villa with pool in Morocco"
+          <Image
+              src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80"
+              alt="Lolo Deco décoration intérieure"
               fill
-              className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover object-center"
             />
           </div>
         </div>
@@ -216,3 +216,4 @@ export default function AboutPage() {
     </div>
   )
 }
+
