@@ -34,7 +34,7 @@ export default function ContactPage() {
         </svg>
       ),
       label: t('email'),
-      links: [{ text: 'contact@lolodeco.ma', href: 'mailto:contact@lolodeco.ma' }],
+      links: [{ text: 'lolodeco11@gmail.com', href: 'mailto:lolodeco11@gmail.com' }],
     },
     {
       icon: (
